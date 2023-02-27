@@ -31,7 +31,7 @@ async def cli():
             if sync.full:
                 data = await source.get_full_data(sync)
                 if data:
-                    await meili.add_full_data(sync.index_name, data)
+                    await meili.add_full_data(sync.index_name, sync.pk, data)
                     logger.info(
                         f'Full data sync for table "{settings.source.database}.{sync.table}" '
                         f"done! {len(data)} documents added."

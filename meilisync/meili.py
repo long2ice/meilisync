@@ -24,8 +24,10 @@ class Meili:
             if sync.table == table:
                 return sync
 
-    async def add_full_data(self, index: str, data: list):
-        return await self.client.index(index).add_documents(data)
+    async def add_full_data(self, index: str, pk: str, data: list):
+        batch_size = 1000
+        for i in range(0, len(data), batch_size):
+            await self.client.index(index).add_documents(data[i : i + batch_size], primary_key=pk)
 
     async def handle_event(self, event: Event):
         if self.debug:

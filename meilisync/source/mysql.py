@@ -1,6 +1,7 @@
 from typing import List
 
 import asyncmy
+from asyncmy.cursors import DictCursor
 from asyncmy.replication import BinLogStream
 from asyncmy.replication.row_events import (
     DeleteRowsEvent,
@@ -36,13 +37,13 @@ class MySQL(Source):
             )
         else:
             fields = "*"
-        async with conn.cursor() as cur:
+        async with conn.cursor(cursor=DictCursor) as cur:
             await cur.execute(f"SELECT {fields} FROM {sync.table}")
             ret = await cur.fetchall()
             return ret
 
     async def _get_binlog_position(self):
-        async with self.conn.cursor() as cur:
+        async with self.conn.cursor(cursor=DictCursor) as cur:
             await cur.execute("SHOW MASTER STATUS")
             ret = await cur.fetchone()
             return ret["File"], ret["Position"]
