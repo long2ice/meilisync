@@ -15,7 +15,7 @@ sync:
   - table: collection
     index: beauty-collections
     full: true
-    fields_mapping:
+    fields:
       id:
       title:
       description:
@@ -23,7 +23,7 @@ sync:
   - table: picture
     index: beauty-pictures
     full: true
-    fields_mapping:
+    fields:
       id:
       description:
       category:

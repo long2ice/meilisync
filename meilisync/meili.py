@@ -38,12 +38,10 @@ class Meili:
             return
         index = self.client.index(sync.index_name)
         if event.type == EventType.create:
-            return await index.add_documents(
-                [event.mapping_data(sync.fields_mapping)], primary_key=sync.pk
-            )
+            return await index.add_documents([event.mapping_data(sync.fields)], primary_key=sync.pk)
         elif event.type == EventType.update:
             return await index.update_documents(
-                [event.mapping_data(sync.fields_mapping)], primary_key=sync.pk
+                [event.mapping_data(sync.fields)], primary_key=sync.pk
             )
         elif event.type == EventType.delete:
             return await index.delete_documents([str(getattr(event.data, sync.pk))])

@@ -22,8 +22,8 @@ class Mongo(Source):
 
     async def get_full_data(self, sync: Sync):
         collection = self.db[sync.table]
-        if sync.fields_mapping:
-            fields = {field: sync.fields_mapping[field] for field in sync.fields_mapping}
+        if sync.fields:
+            fields = {field: sync.fields[field] for field in sync.fields}
         else:
             fields = {}
         cursor = collection.find({}, fields)

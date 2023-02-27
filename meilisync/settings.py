@@ -25,7 +25,7 @@ class Sync(BaseModel):
     pk: str = "id"
     full: bool = False
     index: Optional[str]
-    fields_mapping: Optional[dict]
+    fields: Optional[dict]
 
     @property
     def index_name(self):

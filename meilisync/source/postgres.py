@@ -37,10 +37,8 @@ class Postgres(Source):
     async def get_full_data(self, sync: Sync):
         conn = psycopg2.connect(**self.kwargs, cursor_factory=psycopg2.extras.RealDictCursor)
         with conn.cursor() as cur:
-            if sync.fields_mapping:
-                fields = ", ".join(
-                    f"{field} as {sync.fields_mapping[field]}" for field in sync.fields_mapping
-                )
+            if sync.fields:
+                fields = ", ".join(f"{field} as {sync.fields[field]}" for field in sync.fields)
             else:
                 fields = "*"
             cur.execute(f"SELECT {fields} FROM {sync.table}")
