@@ -1,0 +1,19 @@
+debug: true
+progress:
+  type: file
+source:
+  type: mongo
+  host: 192.168.123.205
+  port: 27017
+  username: root
+  password: lb1137899889
+  database: test
+meilisearch:
+  api_url: http://192.168.123.205:7700
+  api_key:
+sync:
+  - table: test
+    index: test
+    pk: id
+    full: true
+    fields_mapping:

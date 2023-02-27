@@ -1,2 +1,3 @@
 # meilisync
-Realtime sync data from MySQL/PostgreSQL to meilisearch
+
+Realtime sync data from MySQL/PostgreSQL/MongoDB to meilisearch

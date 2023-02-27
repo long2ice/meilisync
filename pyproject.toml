@@ -1,0 +1,67 @@
+[tool.poetry]
+name = "meilisync"
+version = "0.1.0"
+description = "Realtime sync data from MySQL/PostgreSQL/MongoDB to meilisearch"
+authors = ["long2ice <long2ice@gmail.com>"]
+readme = "README.md"
+documentation = "https://github.com/long2ice/meilisync"
+include = ["CHANGELOG.md", "LICENSE", "README.md"]
+keywords = ["meilisearch", "postgres", "mysql"]
+license = "Apache-2.0"
+packages = [
+    { include = "meilisync" },
+]
+repository = "https://github.com/long2ice/meilisync.git"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+asyncmy = { version = "*", optional = true }
+meilisearch-python-async = "*"
+pyyaml = "*"
+loguru = "*"
+aiofiles = "*"
+redis = "*"
+psycopg2-binary = { version = "*", optional = true }
+motor = { version = "*", optional = true }
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+isort = "*"
+mypy = "*"
+pytest = "*"
+ruff = "*"
+types-pyyaml = "*"
+types-aiofiles = "*"
+pytest-custom-exit-code = "*"
+types-redis = "*"
+
+[tool.poetry.extras]
+mysql = ["asyncmy"]
+redis = ["redis"]
+postgres = ["psycopg2-binary"]
+mongodb = ["motor"]
+all = ["asyncmy", "redis", "psycopg2-binary", "motor"]
+
+[tool.poetry.scripts]
+meilisync = "meilisync.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 100
+target-version = ['py36', 'py37', 'py38', 'py39']
+
+[tool.pytest.ini_options]
+asyncio_mode = 'auto'
+
+[tool.mypy]
+ignore_missing_imports = true
+pretty = true
+
+[tool.ruff]
+line-length = 100
