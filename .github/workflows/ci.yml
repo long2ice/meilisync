@@ -1,5 +1,11 @@
 name: ci
-on: [ push, pull_request ]
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches-ignore:
+      - main
 jobs:
   ci:
     runs-on: ubuntu-latest
