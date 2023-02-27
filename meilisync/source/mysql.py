@@ -33,7 +33,7 @@ class MySQL(Source):
         conn = await asyncmy.connect(**self.kwargs)
         if sync.fields_mapping:
             fields = ", ".join(
-                f"{field} as {sync.fields_mapping[field]}" for field in sync.fields_mapping
+                f"{field} as {sync.fields_mapping[field] or field}" for field in sync.fields_mapping
             )
         else:
             fields = "*"

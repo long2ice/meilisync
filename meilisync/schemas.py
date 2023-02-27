@@ -18,5 +18,5 @@ class Event(ProgressEvent):
         data = {}
         for k, v in self.data.items():
             if k in fields_mapping:
-                data[fields_mapping[k]] = v
+                data[fields_mapping[k] or k] = v
         return data or self.data

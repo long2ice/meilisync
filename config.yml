@@ -3,17 +3,27 @@ progress:
   type: file
 source:
   type: mysql
-  host: 127.0.0.1
+  host: 192.168.123.205
   port: 3306
   user: root
   password: '123456'
-  database: test
+  database: beauty
 meilisearch:
   api_url: http://192.168.123.205:7700
   api_key:
 sync:
-  - table: test
-    index: test
-    pk: id
+  - table: collection
+    index: beauty-collections
     full: true
     fields_mapping:
+      id:
+      title:
+      description:
+      category:
+  - table: picture
+    index: beauty-pictures
+    full: true
+    fields_mapping:
+      id:
+      description:
+      category:

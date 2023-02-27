@@ -36,7 +36,7 @@ class Meili:
         sync = self._get_sync(table)
         if not sync:
             return
-        index = self.client.index(sync.index or table)
+        index = self.client.index(sync.index_name)
         if event.type == EventType.create:
             return await index.add_documents(
                 [event.mapping_data(sync.fields_mapping)], primary_key=sync.pk
