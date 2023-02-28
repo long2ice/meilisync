@@ -44,4 +44,4 @@ class Meili:
                 [event.mapping_data(sync.fields)], primary_key=sync.pk
             )
         elif event.type == EventType.delete:
-            return await index.delete_documents([str(getattr(event.data, sync.pk))])
+            return await index.delete_documents([str(event.data[sync.pk])])
