@@ -23,6 +23,7 @@ aiofiles = "*"
 redis = "*"
 psycopg2-binary = { version = "*", optional = true }
 motor = { version = "*", optional = true }
+sentry-sdk = "*"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
@@ -40,6 +41,7 @@ mysql = ["asyncmy"]
 redis = ["redis"]
 postgres = ["psycopg2-binary"]
 mongodb = ["motor"]
+sentry = ["sentry-sdk"]
 all = ["asyncmy", "redis", "psycopg2-binary", "motor"]
 
 [tool.poetry.scripts]

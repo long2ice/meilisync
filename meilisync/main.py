@@ -18,6 +18,15 @@ async def cli():
     with open(config_file) as f:
         config = f.read()
     settings = Settings.parse_obj(yaml.safe_load(config))
+    if settings.sentry:
+        sentry = settings.sentry
+
+        import sentry_sdk
+
+        sentry_sdk.init(
+            dsn=sentry.dsn,
+            environment=sentry.environment,
+        )
     progress = get_progress(settings.progress.type)(**settings.progress.dict(exclude={"type"}))
     current_progress = await progress.get()
     source = get_source(settings.source.type)(

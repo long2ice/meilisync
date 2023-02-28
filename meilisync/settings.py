@@ -39,12 +39,18 @@ class Progress(BaseModel):
         extra = Extra.allow
 
 
+class Sentry(BaseModel):
+    dsn: str
+    environment: str = "production"
+
+
 class Settings(BaseSettings):
     progress: Progress
     debug: bool = False
     source: Source
     meilisearch: MeiliSearch
     sync: List[Sync]
+    sentry: Optional[Sentry]
 
     @property
     def tables(self):
