@@ -26,8 +26,9 @@ class Meili:
 
     async def add_full_data(self, index: str, pk: str, data: list):
         batch_size = 1000
-        for i in range(0, len(data), batch_size):
-            await self.client.index(index).add_documents(data[i : i + batch_size], primary_key=pk)
+        await self.client.index(index).add_documents_in_batches(
+            data, batch_size=batch_size, primary_key=pk
+        )
 
     async def handle_event(self, event: Event):
         if self.debug:
