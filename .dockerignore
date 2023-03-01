@@ -1,0 +1,41 @@
+# Build artifacts
+build/
+dist/
+
+# Git/GitHub
+.git/
+.github/
+.gitignore
+
+# Python specific files
+**/__pycache__
+**/.mypy_cache/
+**/.pytest_cache/
+**/.ruff_cache/
+**/*.py[cod]
+**/*.egg
+tests/
+
+# C extensions
+*.so
+
+# pyenv
+**/.python-version
+
+# Virtual Environments
+**/.env
+**/.venv
+**/env/
+**/venv/
+
+# Editors
+**/.vscode/
+**/.idea/
+
+# Docker
+docker-compose.yml
+docker-compose.yaml
+Dockerfile
+
+# Project files
+CHANGELOG.md
