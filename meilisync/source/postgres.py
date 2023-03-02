@@ -1,6 +1,6 @@
+import asyncio
 import json
-import threading
-from queue import Queue
+from asyncio import Queue
 from typing import List
 
 import psycopg2
@@ -66,12 +66,14 @@ class Postgres(Source):
                 event_type = EventType.create
             else:
                 return
-            self.queue.put(
-                Event(
-                    type=event_type,
-                    table=table,
-                    data=values,
-                    progress={"start_lsn": payload.get("nextlsn")},
+            asyncio.get_event_loop().run_until_complete(
+                self.queue.put(
+                    Event(
+                        type=event_type,
+                        table=table,
+                        data=values,
+                        progress={"start_lsn": payload.get("nextlsn")},
+                    )
                 )
             )
 
@@ -89,14 +91,16 @@ class Postgres(Source):
                 "include-lsn": "true",
             },
         )
-        t = threading.Thread(target=self.cursor.consume_stream, args=(self._consumer,))
-        t.setDaemon(True)
-        t.start()
+        asyncio.ensure_future(
+            asyncio.get_event_loop().run_in_executor(
+                None, self.cursor.consume_stream, self._consumer
+            )
+        )
         yield ProgressEvent(
             progress={"start_lsn": self.start_lsn},
         )
         while True:
-            yield self.queue.get()
+            yield await self.queue.get()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.cursor.close()
