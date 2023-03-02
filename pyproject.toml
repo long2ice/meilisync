@@ -42,7 +42,7 @@ redis = ["redis"]
 postgres = ["psycopg2-binary"]
 mongodb = ["motor"]
 sentry = ["sentry-sdk"]
-all = ["asyncmy", "redis", "psycopg2-binary", "motor"]
+all = ["asyncmy", "redis", "psycopg2-binary", "motor", "sentry-sdk"]
 
 [tool.poetry.scripts]
 meilisync = "meilisync.main:main"

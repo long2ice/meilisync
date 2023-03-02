@@ -1239,7 +1239,7 @@ files = [
 dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 
 [extras]
-all = ["asyncmy", "redis", "psycopg2-binary", "motor"]
+all = ["asyncmy", "redis", "psycopg2-binary", "motor", "sentry-sdk"]
 mongodb = ["motor"]
 mysql = ["asyncmy"]
 postgres = ["psycopg2-binary"]
@@ -1249,4 +1249,4 @@ sentry = ["sentry-sdk"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "96921d81a774049a417ef99b07ed9a6768043d4a25ba76ca4c177fc123ae5c41"
+content-hash = "0febdb609aa918d9fdcc2ddfc3426dfbd5e2eb90c7a32482e01d1be06252c564"
