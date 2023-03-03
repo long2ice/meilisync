@@ -109,8 +109,8 @@ Source database configuration, currently only support MySQL and PostgreSQL and M
 
 MeiliSearch configuration.
 
-- `api_url`: the MeiliSearch API URL.
-- `api_key`: the MeiliSearch API key.
+- `api_url`: the MeiliSearch API URL. This can be set from the `MEILI_HTTP_ADDR` environment variable
+- `api_key`: the MeiliSearch API key. This can be set with the `MEILI_MASTER_KEY` environment varable
 
 ### sync
 
