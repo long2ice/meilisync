@@ -14,3 +14,6 @@ test:
 	$(py_warn) pytest --suppress-no-test-exit-code
 
 ci: check test
+
+build:
+	@poetry build

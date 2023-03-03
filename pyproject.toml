@@ -4,14 +4,14 @@ version = "0.1.0"
 description = "Realtime sync data from MySQL/PostgreSQL/MongoDB to meilisearch"
 authors = ["long2ice <long2ice@gmail.com>"]
 readme = "README.md"
-documentation = "https://github.com/long2ice/meilisync"
+documentation = "https://github.com/meilisync/meilisync"
 include = ["CHANGELOG.md", "LICENSE", "README.md"]
 keywords = ["meilisearch", "postgres", "mysql"]
 license = "Apache-2.0"
 packages = [
     { include = "meilisync" },
 ]
-repository = "https://github.com/long2ice/meilisync.git"
+repository = "https://github.com/meilisync/meilisync.git"
 
 [tool.poetry.dependencies]
 python = "^3.9"

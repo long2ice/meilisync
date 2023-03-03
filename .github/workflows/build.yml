@@ -20,4 +20,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: long2ice/meilisync:latest
+          tags: long2ice/meilisync
