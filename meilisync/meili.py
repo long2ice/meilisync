@@ -1,22 +1,30 @@
 import functools
-from typing import List
+from typing import List, Optional, Type, Union
 
 from loguru import logger
 from meilisearch_python_async import Client
 
 from meilisync.enums import EventType
+from meilisync.plugin import Plugin
 from meilisync.schemas import Event
 from meilisync.settings import MeiliSearch, Sync
 
 
 class Meili:
-    def __init__(self, debug: bool, meilisearch: MeiliSearch, sync: List[Sync]):
+    def __init__(
+        self,
+        debug: bool,
+        meilisearch: MeiliSearch,
+        sync: List[Sync],
+        plugins: Optional[List[Union[Type[Plugin], Plugin]]] = None,
+    ):
         self.client = Client(
             meilisearch.api_url,
             meilisearch.api_key,
         )
         self.sync = sync
         self.debug = debug
+        self.plugins = plugins or []
 
     @functools.lru_cache()
     def _get_sync(self, table: str):
@@ -37,12 +45,30 @@ class Meili:
         sync = self._get_sync(table)
         if not sync:
             return
+        for plugin in self.plugins:
+            if isinstance(plugin, Plugin):
+                event = await plugin.pre_event(event)
+            else:
+                event = await plugin().pre_event(event)
+        for plugin in sync.plugins_cls():
+            if isinstance(plugin, Plugin):
+                event = await plugin.pre_event(event)
+            else:
+                event = await plugin().pre_event(event)
         index = self.client.index(sync.index_name)
         if event.type == EventType.create:
-            return await index.add_documents([event.mapping_data(sync.fields)], primary_key=sync.pk)
+            await index.add_documents([event.mapping_data(sync.fields)], primary_key=sync.pk)
         elif event.type == EventType.update:
-            return await index.update_documents(
-                [event.mapping_data(sync.fields)], primary_key=sync.pk
-            )
+            await index.update_documents([event.mapping_data(sync.fields)], primary_key=sync.pk)
         elif event.type == EventType.delete:
-            return await index.delete_documents([str(event.data[sync.pk])])
+            await index.delete_documents([str(event.data[sync.pk])])
+        for plugin in self.plugins:
+            if isinstance(plugin, Plugin):
+                event = await plugin.post_event(event)
+            else:
+                event = await plugin().post_event(event)
+        for plugin in sync.plugins_cls():
+            if isinstance(plugin, Plugin):
+                event = await plugin.post_event(event)
+            else:
+                event = await plugin().post_event(event)

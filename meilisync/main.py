@@ -18,6 +18,8 @@ async def cli():
     with open(config_file) as f:
         config = f.read()
     settings = Settings.parse_obj(yaml.safe_load(config))
+    if settings.debug:
+        logger.debug(settings)
     if settings.sentry:
         sentry = settings.sentry
 
@@ -34,7 +36,7 @@ async def cli():
         tables=settings.tables,
         **settings.source.dict(exclude={"type"}),
     )
-    meili = Meili(settings.debug, settings.meilisearch, settings.sync)
+    meili = Meili(settings.debug, settings.meilisearch, settings.sync, settings.plugins_cls())
     if not current_progress:
         for sync in settings.sync:
             if sync.full:

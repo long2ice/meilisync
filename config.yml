@@ -1,32 +1,25 @@
 debug: true
+plugins:
+  - meilisync.plugin.Plugin
 progress:
   type: file
 source:
   type: mysql
-  host: 192.168.123.205
+  host: 127.0.0.1
   port: 3306
   user: root
   password: '123456'
-  database: beauty
+  database: test
 meilisearch:
   api_url: http://192.168.123.205:7700
   api_key:
 sync:
-  - table: collection
-    index: beauty-collections
+  - table: test
+    index: test
     full: true
     fields:
       id:
-      title:
-      description:
-      category:
-  - table: picture
-    index: beauty-pictures
-    full: true
-    fields:
-      id:
-      description:
-      category:
+      age:
 sentry:
   dsn: ''
   environment: 'production'

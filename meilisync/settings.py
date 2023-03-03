@@ -3,6 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, BaseSettings, Extra
 
 from meilisync.enums import ProgressType, SourceType
+from meilisync.plugin import load_plugin
 
 
 class Source(BaseModel):
@@ -20,7 +21,21 @@ class MeiliSearch(BaseModel):
     api_key: Optional[str]
 
 
-class Sync(BaseModel):
+class BasePlugin(BaseModel):
+    plugins: Optional[List[str]]
+
+    def plugins_cls(self):
+        plugins = []
+        for plugin in self.plugins or []:
+            p = load_plugin(plugin)
+            if p.is_global:
+                plugins.append(p())
+            else:
+                plugins.append(p)
+        return plugins
+
+
+class Sync(BasePlugin):
     table: str
     pk: str = "id"
     full: bool = False
@@ -44,7 +59,7 @@ class Sentry(BaseModel):
     environment: str = "production"
 
 
-class Settings(BaseSettings):
+class Settings(BaseSettings, BasePlugin):
     progress: Progress
     debug: bool = False
     source: Source
