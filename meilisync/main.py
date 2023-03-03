@@ -36,7 +36,8 @@ async def cli():
         tables=settings.tables,
         **settings.source.dict(exclude={"type"}),
     )
-    meili = Meili(settings.debug, settings.meilisearch, settings.sync, settings.plugins_cls())
+    meilisearch = settings.meilisearch
+    meili = Meili(settings.debug, meilisearch.api_url, meilisearch.api_key, settings.plugins_cls())
     if not current_progress:
         for sync in settings.sync:
             if sync.full:
@@ -55,7 +56,9 @@ async def cli():
     logger.info(f'Start increment sync data from "{settings.source.type}" to MeiliSearch...')
     async for event in source:
         if isinstance(event, Event):
-            await meili.handle_event(event)
+            sync = settings.get_sync(event.table)
+            if sync:
+                await meili.handle_event(event, sync)
         await progress.set(**event.progress)
 
 

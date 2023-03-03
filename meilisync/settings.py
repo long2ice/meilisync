@@ -70,3 +70,8 @@ class Settings(BaseSettings, BasePlugin):
     @property
     def tables(self):
         return [sync.table for sync in self.sync]
+
+    def get_sync(self, table: str):
+        for sync in self.sync:
+            if sync.table == table:
+                return sync

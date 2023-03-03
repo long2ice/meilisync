@@ -1,4 +1,3 @@
-import functools
 from typing import List, Optional, Type, Union
 
 from loguru import logger
@@ -7,30 +6,23 @@ from meilisearch_python_async import Client
 from meilisync.enums import EventType
 from meilisync.plugin import Plugin
 from meilisync.schemas import Event
-from meilisync.settings import MeiliSearch, Sync
+from meilisync.settings import Sync
 
 
 class Meili:
     def __init__(
         self,
         debug: bool,
-        meilisearch: MeiliSearch,
-        sync: List[Sync],
+        api_url: str,
+        api_key: str,
         plugins: Optional[List[Union[Type[Plugin], Plugin]]] = None,
     ):
         self.client = Client(
-            meilisearch.api_url,
-            meilisearch.api_key,
+            api_url,
+            api_key,
         )
-        self.sync = sync
         self.debug = debug
         self.plugins = plugins or []
-
-    @functools.lru_cache()
-    def _get_sync(self, table: str):
-        for sync in self.sync:
-            if sync.table == table:
-                return sync
 
     async def add_full_data(self, index: str, pk: str, data: list):
         batch_size = 1000
@@ -38,13 +30,9 @@ class Meili:
             data, batch_size=batch_size, primary_key=pk
         )
 
-    async def handle_event(self, event: Event):
+    async def handle_event(self, event: Event, sync: Sync):
         if self.debug:
             logger.debug(event)
-        table = event.table
-        sync = self._get_sync(table)
-        if not sync:
-            return
         for plugin in self.plugins:
             if isinstance(plugin, Plugin):
                 event = await plugin.pre_event(event)

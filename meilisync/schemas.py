@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from meilisync.enums import EventType
@@ -12,7 +14,7 @@ class Event(ProgressEvent):
     table: str
     data: dict
 
-    def mapping_data(self, fields_mapping: dict):
+    def mapping_data(self, fields_mapping: Optional[dict] = None):
         if not fields_mapping:
             return self.data
         data = {}
