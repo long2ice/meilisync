@@ -33,10 +33,12 @@ class Postgres(Source):
         else:
             self.cursor.execute("SELECT pg_current_wal_lsn()")
             self.start_lsn = self.cursor.fetchone()[0]
+        self.conn_dict = psycopg2.connect(
+            **self.kwargs, cursor_factory=psycopg2.extras.RealDictCursor
+        )
 
     async def get_full_data(self, sync: Sync):
-        conn = psycopg2.connect(**self.kwargs, cursor_factory=psycopg2.extras.RealDictCursor)
-        with conn.cursor() as cur:
+        with self.conn_dict.cursor() as cur:
             if sync.fields:
                 fields = ", ".join(f"{field} as {sync.fields[field]}" for field in sync.fields)
             else:
@@ -101,6 +103,13 @@ class Postgres(Source):
         )
         while True:
             yield await self.queue.get()
+
+    def _ping(self):
+        with self.conn_dict.cursor() as cur:
+            cur.execute("SELECT 1")
+
+    async def ping(self):
+        await asyncio.get_event_loop().run_in_executor(self._ping)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.cursor.close()

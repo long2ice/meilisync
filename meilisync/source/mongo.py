@@ -32,6 +32,9 @@ class Mongo(Source):
             ret.append(doc)
         return ret
 
+    async def ping(self):
+        return await self.client.admin.command("ping")
+
     async def __aiter__(self):
         oplog = self.client.local.oplog.rs
         if self.progress:

@@ -40,6 +40,10 @@ class MySQL(Source):
             ret = await cur.fetchall()
             return ret
 
+    async def ping(self):
+        conn = await asyncmy.connect(**self.kwargs)
+        return conn.ping()
+
     async def _get_binlog_position(self):
         async with self.conn.cursor(cursor=DictCursor) as cur:
             await cur.execute("SHOW MASTER STATUS")
