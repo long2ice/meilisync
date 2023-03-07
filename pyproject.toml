@@ -24,6 +24,7 @@ redis = "*"
 psycopg2-binary = { version = "*", optional = true }
 motor = { version = "*", optional = true }
 sentry-sdk = "*"
+typer = {version = "*", extras = ["all"]}
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
@@ -45,7 +46,7 @@ sentry = ["sentry-sdk"]
 all = ["asyncmy", "redis", "psycopg2-binary", "motor", "sentry-sdk"]
 
 [tool.poetry.scripts]
-meilisync = "meilisync.main:main"
+meilisync = "meilisync.main:app"
 
 [build-system]
 requires = ["poetry-core"]

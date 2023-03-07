@@ -79,6 +79,12 @@ class Postgres(Source):
                 )
             )
 
+    async def get_count(self, sync: Sync):
+        with self.conn_dict.cursor() as cur:
+            cur.execute(f"SELECT COUNT(*) FROM {sync.table}")
+            ret = cur.fetchone()
+            return ret[0]
+
     async def __aiter__(self):
         try:
             self.cursor.create_replication_slot(self.slot, output_plugin="wal2json")

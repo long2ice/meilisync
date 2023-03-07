@@ -37,11 +37,47 @@ If you run `meilisync` without any arguments, it will try to load the configurat
 directory.
 
 ```shell
+❯ meilisync --help
+                                                                                                                                                                                      
+ Usage: meilisync [OPTIONS] COMMAND [ARGS]...                                                                                                                                         
+                                                                                                                                                                                      
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --config              -c      TEXT  Config file path [default: config.yml]                                                                                                         │
+│ --install-completion                Install completion for the current shell.                                                                                                      │
+│ --show-completion                   Show completion for the current shell, to copy it or customize the installation.                                                               │
+│ --help                              Show this message and exit.                                                                                                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ check            Check whether the data in the database is consistent with the data in MeiliSearch                                                                                 │
+│ refresh          Delete all data in MeiliSearch and full sync                                                                                                                      │
+│ start            Start meilisync                                                                                                                                                   │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+### Start sync
+
+Start sync data from MySQL to MeiliSearch:
+
 ```shell
-> meilisync
-2023-03-03 15:31:26.222 | INFO     | meilisync.main:cli:44 - Full data sync for table "beauty.collection" done! 803 documents added.
-2023-03-03 15:31:26.413 | INFO     | meilisync.main:cli:44 - Full data sync for table "beauty.picture" done! 10612 documents added.
-2023-03-03 15:31:26.413 | INFO     | meilisync.main:cli:53 - Start increment sync data from "mysql" to MeiliSearch...
+❯ meilisync start
+2023-03-07 08:37:25.656 | INFO     | meilisync.main:_:86 - Start increment sync data from "mysql" to MeiliSearch...
+```
+
+### Refresh sync
+
+Delete all data in MeiliSearch and full sync:
+
+```shell
+❯ meilisync refresh -t test
+```
+
+### Check sync
+
+Check whether the data in the database is consistent with the data in MeiliSearch:
+
+```shell
+❯ meilisync check -t test
+
 ```
 
 ## Configuration
@@ -83,7 +119,7 @@ sentry:
   environment: 'production'
 ```
 
-### debug
+### debug (optional)
 
 Enable debug mode, default is `false`, if you want to see more logs, you can set it to `true`.
 
@@ -102,6 +138,7 @@ Source database configuration, currently only support MySQL and PostgreSQL and M
 
 - `type`: `mysql` or `postgres` or `mongo`.
 - `server_id`: the server id for MySQL binlog, default is `1`.
+- `database`: the database name.
 - `other keys`: the database connection arguments, MySQL see [asyncmy](https://github.com/long2ice/asyncmy), PostgreSQL
   see [psycopg2](https://www.psycopg.org/docs/usage.html), MongoDB see [motor](https://motor.readthedocs.io/en/stable/).
 
@@ -122,7 +159,7 @@ The sync configuration, you can add multiple sync tasks.
 - `fields`: the fields to sync, if not set, it will sync all fields. The key is table field name, the value is the
   MeiliSearch field name, if not set, it will use the table field name.
 
-### sentry
+### sentry (optional)
 
 Sentry configuration.
 

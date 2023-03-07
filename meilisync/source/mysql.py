@@ -40,6 +40,13 @@ class MySQL(Source):
             ret = await cur.fetchall()
             return ret
 
+    async def get_count(self, sync: Sync):
+        conn = await asyncmy.connect(**self.kwargs)
+        async with conn.cursor(cursor=DictCursor) as cur:
+            await cur.execute(f"SELECT COUNT(*) as count FROM {sync.table}")
+            ret = await cur.fetchone()
+            return ret["count"]
+
     async def ping(self):
         conn = await asyncmy.connect(**self.kwargs)
         return conn.ping()

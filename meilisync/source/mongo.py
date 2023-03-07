@@ -32,6 +32,10 @@ class Mongo(Source):
             ret.append(doc)
         return ret
 
+    async def get_count(self, sync: Sync):
+        collection = self.db[sync.table]
+        return await collection.count_documents({})
+
     async def ping(self):
         return await self.client.admin.command("ping")
 

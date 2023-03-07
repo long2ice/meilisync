@@ -23,6 +23,9 @@ class Source:
     async def get_full_data(self, sync: Sync):
         raise NotImplementedError
 
+    async def get_count(self, sync: Sync):
+        raise NotImplementedError
+
     async def ping(self):
         raise NotImplementedError
 

@@ -8,8 +8,6 @@ from meilisync.plugin import load_plugin
 
 class Source(BaseModel):
     type: SourceType
-    host: str
-    port: int
     database: str
 
     class Config:

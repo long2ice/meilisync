@@ -30,6 +30,13 @@ class Meili:
             data, batch_size=batch_size, primary_key=pk
         )
 
+    async def delete_all_data(self, index: str):
+        await self.client.index(index).delete_all_documents()
+
+    async def get_count(self, index: str):
+        stats = await self.client.index(index).get_stats()
+        return stats.number_of_documents
+
     async def handle_event(self, event: Event, sync: Sync):
         if self.debug:
             logger.debug(event)
