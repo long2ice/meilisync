@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, BaseSettings, Extra
+from pydantic import BaseModel, BaseSettings, Extra, Field
 
 from meilisync.enums import ProgressType, SourceType
 from meilisync.plugin import load_plugin
@@ -14,9 +14,9 @@ class Source(BaseModel):
         extra = Extra.allow
 
 
-class MeiliSearch(BaseModel):
-    api_url: str
-    api_key: Optional[str]
+class MeiliSearch(BaseSettings):
+    api_url: str = Field(..., env="MEILI_HTTP_ADDR")
+    api_key: Optional[str] = Field(None, env="MEILI_MASTER_KEY")
 
 
 class BasePlugin(BaseModel):
