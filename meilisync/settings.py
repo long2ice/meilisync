@@ -17,6 +17,8 @@ class Source(BaseModel):
 class MeiliSearch(BaseModel):
     api_url: str
     api_key: Optional[str]
+    insert_size: Optional[int]
+    insert_interval: Optional[int]
 
 
 class BasePlugin(BaseModel):
@@ -43,6 +45,9 @@ class Sync(BasePlugin):
     @property
     def index_name(self):
         return self.index or self.table
+
+    def __hash__(self):
+        return hash(self.table)
 
 
 class Progress(BaseModel):

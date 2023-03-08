@@ -98,6 +98,8 @@ source:
 meilisearch:
   api_url: http://192.168.123.205:7700
   api_key:
+  insert_size: 1000
+  insert_interval: 10
 sync:
   - table: collection
     index: beauty-collections
@@ -148,6 +150,13 @@ MeiliSearch configuration.
 
 - `api_url`: the MeiliSearch API URL.
 - `api_key`: the MeiliSearch API key.
+- `insert_size`: insert after collecting this many documents, optional.
+- `insert_interval`: insert after this many seconds have passed, optional.
+
+If nether `insert_size` nor `insert_interval` is set, it will insert each document immediately.
+
+If you prefer performance, just set and increase `insert_size` and `insert_interval`. The insert will be made as long as
+one of the conditions is met.
 
 ### sync
 

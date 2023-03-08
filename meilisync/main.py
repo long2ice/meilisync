@@ -6,6 +6,7 @@ import yaml
 from loguru import logger
 
 from meilisync.discover import get_progress, get_source
+from meilisync.event import EventCollection
 from meilisync.meili import Meili
 from meilisync.schemas import Event
 from meilisync.settings import Settings
@@ -47,9 +48,7 @@ def callback(
             **settings.source.dict(exclude={"type"}),
         )
         meilisearch = settings.meilisearch
-        meili = Meili(
-            settings.debug, meilisearch.api_url, meilisearch.api_key, settings.plugins_cls()
-        )
+        meili = Meili(meilisearch.api_url, meilisearch.api_key, settings.plugins_cls())
         context.obj["current_progress"] = current_progress
         context.obj["source"] = source
         context.obj["meili"] = meili
@@ -63,12 +62,17 @@ def callback(
 def start(
     context: typer.Context,
 ):
+    current_progress = context.obj["current_progress"]
+    source = context.obj["source"]
+    meili = context.obj["meili"]
+    settings = context.obj["settings"]
+    progress = context.obj["progress"]
+    meili_settings = settings.meilisearch
+    collection = EventCollection()
+    lock = None
+
     async def _():
-        current_progress = context.obj["current_progress"]
-        source = context.obj["source"]
-        meili = context.obj["meili"]
-        settings = context.obj["settings"]
-        progress = context.obj["progress"]
+        nonlocal current_progress
         if not current_progress:
             for sync in settings.sync:
                 if sync.full:
@@ -85,13 +89,44 @@ def start(
                         )
         logger.info(f'Start increment sync data from "{settings.source.type}" to MeiliSearch...')
         async for event in source:
+            if settings.debug:
+                logger.debug(event)
+            current_progress = event.progress
             if isinstance(event, Event):
                 sync = settings.get_sync(event.table)
-                if sync:
+                if not sync:
+                    continue
+                if not meili_settings.insert_size and not meili_settings.insert_interval:
                     await meili.handle_event(event, sync)
-            await progress.set(**event.progress)
+                    await progress.set(**current_progress)
+                else:
+                    collection.add_event(sync, event)
+                    if collection.size >= meili_settings.insert_size:
+                        async with lock:
+                            await meili.handle_events(collection)
+                            await progress.set(**current_progress)
+            else:
+                await progress.set(**current_progress)
 
-    asyncio.run(_())
+    async def interval():
+        if not settings.meilisearch.insert_interval:
+            return
+        while True:
+            await asyncio.sleep(settings.meilisearch.insert_interval)
+            try:
+                async with lock:
+                    await meili.handle_events(collection)
+                    await progress.set(**current_progress)
+            except Exception as e:
+                logger.exception(e)
+                logger.error(f"Error when insert data to MeiliSearch: {e}")
+
+    async def run():
+        nonlocal lock
+        lock = asyncio.Lock()
+        await asyncio.gather(_(), interval())
+
+    asyncio.run(run())
 
 
 @app.command(help="Delete all data in MeiliSearch and full sync")
