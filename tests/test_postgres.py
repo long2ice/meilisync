@@ -11,7 +11,7 @@ async def test_sync():
     conn = await psycopg2.connect(
         host="postgres",
         port=5432,
-        user="postgres",
+        username="postgres",
         password="123456",
         database="test",
     )

@@ -48,6 +48,9 @@ jobs:
       - name: Install dependencies
         run: poetry install -E all
       - name: Start meilisync
-        run: nohup meilisync -c tests/config/mysql.yml && nohup meilisync -c tests/config/postgres.yml && nohup meilisync -c tests/config/mongo.yml
+        run: >
+          meilisync --config tests/config/postgres.yml start &
+          meilisync --config tests/config/mongo.yml start &
+          meilisync --config tests/config/mysql.yml start &
       - name: CI
         run: make ci

@@ -1,11 +1,12 @@
 debug: true
 progress:
   type: file
+  path: mongo.json
 source:
   type: mongo
   host: mongo
   port: 27017
-  user: root
+  username: root
   password: root
   database: test
 meilisearch:

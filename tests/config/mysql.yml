@@ -1,6 +1,7 @@
 debug: true
 progress:
   type: file
+  path: mysql.json
 source:
   type: mysql
   host: mysql
