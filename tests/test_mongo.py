@@ -8,14 +8,21 @@ index = client.index("mongo")
 
 
 async def test_sync():
-    client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:root@localhost:27017")
+    client = motor.motor_asyncio.AsyncIOMotorClient(
+        "mongodb://root:root@localhost:27017", directConnection=True
+    )
     db = client.test
     collection = db.test
+    await collection.delete_many({})
     data = {
-        "id": 1,
         "age": 18,
     }
-    await collection.insert_one(data)
+    inserted_id = (await collection.insert_one(data)).inserted_id
     await asyncio.sleep(2)
-    meili_data = await index.get_documents()
-    assert meili_data == [data]
+    ret = await index.get_documents()
+    assert ret.results == [
+        {
+            "age": 18,
+            "_id": str(inserted_id),
+        }
+    ]

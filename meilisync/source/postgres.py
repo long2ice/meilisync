@@ -27,7 +27,7 @@ class Postgres(Source):
         super().__init__(progress, tables, **kwargs)
         self.conn = psycopg2.connect(**self.kwargs, connection_factory=LogicalReplicationConnection)
         self.cursor = self.conn.cursor()
-        self.queue: Queue[Event] = Queue()
+        self.queue = None
         if self.progress:
             self.start_lsn = self.progress["start_lsn"]
         else:
@@ -68,8 +68,8 @@ class Postgres(Source):
                 event_type = EventType.create
             else:
                 return
-            asyncio.get_event_loop().run_until_complete(
-                self.queue.put(
+            asyncio.new_event_loop().run_until_complete(
+                self.queue.put(  # type: ignore
                     Event(
                         type=event_type,
                         table=table,
@@ -86,6 +86,7 @@ class Postgres(Source):
             return ret[0]
 
     async def __aiter__(self):
+        self.queue = Queue()
         try:
             self.cursor.create_replication_slot(self.slot, output_plugin="wal2json")
         except psycopg2.errors.DuplicateObject:  # type: ignore

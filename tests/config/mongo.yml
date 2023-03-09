@@ -9,9 +9,12 @@ source:
   username: root
   password: root
   database: test
+  replicaSet: rs0
+  directConnection: true
 meilisearch:
   api_url: http://localhost:7700
 sync:
   - table: test
     index: mongo
+    pk: _id
     full: false

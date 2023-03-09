@@ -16,11 +16,13 @@ async def test_sync():
         database="test",
     )
     cur = conn.cursor()
+    cur.execute("DROP TABLE IF EXISTS test")
     cur.execute("CREATE TABLE IF NOT EXISTS test (id INT PRIMARY KEY, age INT)")
     cur.execute("INSERT INTO test (id, age) VALUES (%s, %s)", (1, 18))
+    conn.commit()
     time.sleep(2)
-    meili_data = await index.get_documents()
-    assert meili_data == [
+    ret = await index.get_documents()
+    assert ret.results == [
         {
             "id": 1,
             "age": 18,

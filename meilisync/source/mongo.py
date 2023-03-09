@@ -1,12 +1,9 @@
-from asyncio import sleep
 from typing import List
 
 import motor.motor_asyncio
-import pymongo
-from pymongo import CursorType
 
-from meilisync.enums import SourceType
-from meilisync.schemas import Event, ProgressEvent
+from meilisync.enums import EventType, SourceType
+from meilisync.schemas import Event
 from meilisync.settings import Sync
 from meilisync.source import Source
 
@@ -40,35 +37,31 @@ class Mongo(Source):
         return await self.client.admin.command("ping")
 
     async def __aiter__(self):
-        oplog = self.client.local.oplog.rs
+        pipeline = [{"$match": {"operationType": {"$in": ["insert", "update", "delete"]}}}]
         if self.progress:
-            ts = self.progress["ts"]
+            resume_token = self.progress["resume_token"]
         else:
-            try:
-                first = await oplog.find().sort("$natural", pymongo.ASCENDING).limit(-1).next()
-                ts = first["ts"]
-            except StopAsyncIteration:
-                ts = 0
-
-        yield ProgressEvent(
-            progress={
-                "ts": ts,
-            }
-        )
-        while True:
-            cursor = oplog.find(
-                {"ts": {"$gt": ts}}, cursor_type=CursorType.TAILABLE_AWAIT, oplog_replay=True
-            )
-            while cursor.alive:
-                async for doc in cursor:
-                    ts = doc["ts"]
-                    yield Event(
-                        type=doc["op"],
-                        table=doc["ns"].split(".")[1],
-                        data=doc["o"],
-                        progress={"ts": ts},
-                    )
-                await sleep(1)
+            resume_token = None
+        async with self.db.watch(pipeline, resume_after=resume_token) as stream:
+            async for change in stream:
+                resume_token = stream.resume_token
+                operation_type = change["operationType"]
+                if operation_type == "insert":
+                    event_type = EventType.create
+                    data = change["fullDocument"]
+                elif operation_type == "update":
+                    event_type = EventType.update
+                    data = change["updateDescription"]["updatedFields"]
+                elif operation_type == "delete":
+                    event_type = EventType.delete
+                    data = change["documentKey"]
+                data["_id"] = str(data["_id"])
+                yield Event(
+                    type=event_type,
+                    table=change["ns"]["coll"],
+                    data=data,
+                    progress=dict(resume_token=resume_token),
+                )
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.client.close()
