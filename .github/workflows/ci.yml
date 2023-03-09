@@ -46,7 +46,7 @@ jobs:
           pip install -U pip poetry
           poetry config virtualenvs.create false
       - name: Install dependencies
-        run: poetry install
+        run: poetry install -E all
       - name: Start meilisync
         run: nohup meilisync -c tests/config/mysql.yml && nohup meilisync -c tests/config/postgres.yml && nohup meilisync -c tests/config/mongo.yml
       - name: CI
