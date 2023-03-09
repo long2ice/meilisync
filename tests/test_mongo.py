@@ -8,7 +8,7 @@ index = client.index("mongo")
 
 
 async def test_sync():
-    client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:root@mongo:27017")
+    client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://root:root@localhost:27017")
     db = client.test
     collection = db.test
     data = {

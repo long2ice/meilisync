@@ -36,6 +36,7 @@ types-pyyaml = "*"
 types-aiofiles = "*"
 pytest-custom-exit-code = "*"
 types-redis = "*"
+pytest-asyncio = "*"
 
 [tool.poetry.extras]
 mysql = ["asyncmy"]

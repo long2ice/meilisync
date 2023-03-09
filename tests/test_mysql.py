@@ -9,7 +9,7 @@ index = client.index("mysql")
 
 async def test_sync():
     conn = await asyncmy.connect(
-        host="mysql",
+        host="localhost",
         user="root",
         password="123456",
         port=3306,

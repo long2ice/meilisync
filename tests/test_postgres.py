@@ -9,7 +9,7 @@ index = client.index("postgres")
 
 async def test_sync():
     conn = await psycopg2.connect(
-        host="postgres",
+        host="localhost",
         port=5432,
         username="postgres",
         password="123456",
