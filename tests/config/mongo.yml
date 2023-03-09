@@ -4,7 +4,7 @@ progress:
   path: mongo.json
 source:
   type: mongo
-  host: mongo
+  host: localhost
   port: 27017
   username: root
   password: root

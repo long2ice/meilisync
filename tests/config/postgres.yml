@@ -4,7 +4,7 @@ progress:
   path: postgres.json
 source:
   type: postgres
-  host: postgres
+  host: localhost
   port: 5432
   user: postgres
   password: postgres
