@@ -1,6 +1,6 @@
 import asyncio
 
-import motor
+import motor.motor_asyncio
 
 from conftest import client
 

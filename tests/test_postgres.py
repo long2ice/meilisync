@@ -8,15 +8,16 @@ index = client.index("postgres")
 
 
 async def test_sync():
-    conn = await psycopg2.connect(
+    conn = psycopg2.connect(
         host="localhost",
         port=5432,
-        username="postgres",
+        user="postgres",
         password="123456",
         database="test",
     )
-    conn.execute("CREATE TABLE IF NOT EXISTS test (id INT PRIMARY KEY, age INT)")
-    conn.execute("INSERT INTO test (id, age) VALUES (%s, %s)", (1, 18))
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS test (id INT PRIMARY KEY, age INT)")
+    cur.execute("INSERT INTO test (id, age) VALUES (%s, %s)", (1, 18))
     time.sleep(2)
     meili_data = await index.get_documents()
     assert meili_data == [
