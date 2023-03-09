@@ -22,7 +22,7 @@ pip install meilisync
 You can use docker to run `meilisync`:
 
 ```yaml
-version: '3'
+version: "3"
 services:
   meilisync:
     image: long2ice/meilisync
@@ -38,9 +38,9 @@ directory.
 
 ```shell
 ❯ meilisync --help
-                                                                                                                                                                                      
- Usage: meilisync [OPTIONS] COMMAND [ARGS]...                                                                                                                                         
-                                                                                                                                                                                      
+
+ Usage: meilisync [OPTIONS] COMMAND [ARGS]...
+
 ╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ --config              -c      TEXT  Config file path [default: config.yml]                                                                                                         │
 │ --install-completion                Install completion for the current shell.                                                                                                      │
@@ -86,6 +86,7 @@ Here is an example configuration file:
 
 ```yaml
 debug: true
+plugins:
 progress:
   type: file
 source:
@@ -93,7 +94,7 @@ source:
   host: 192.168.123.205
   port: 3306
   user: root
-  password: '123456'
+  password: "123456"
   database: beauty
 meilisearch:
   api_url: http://192.168.123.205:7700
@@ -103,6 +104,7 @@ meilisearch:
 sync:
   - table: collection
     index: beauty-collections
+    plugins:
     full: true
     fields:
       id:
@@ -117,13 +119,34 @@ sync:
       description:
       category:
 sentry:
-  dsn: ''
-  environment: 'production'
+  dsn: ""
+  environment: "production"
 ```
 
 ### debug (optional)
 
 Enable debug mode, default is `false`, if you want to see more logs, you can set it to `true`.
+
+### plugins (optional)
+
+The plugins is used to customize the data before or after insert to MeiliSearch and the plugins is a list of python modules.
+
+Which is a python class with `pre_event` and `post_event` methods, the `pre_event` method is called before insert to MeiliSearch, the `post_event` method is called after insert to MeiliSearch.
+
+```python
+class Plugin:
+    is_global = False
+
+    async def pre_event(self, event: Event):
+        logger.debug(f"pre_event: {event}, is_global: {self.is_global}")
+        return event
+
+    async def post_event(self, event: Event):
+        logger.debug(f"post_event: {event}, is_global: {self.is_global}")
+        return event
+```
+
+The `is_global` is used to indicate whether the plugin instance is global, if set to `True`, the plugin instance will be created only once, otherwise, the plugin instance will be created for each event.
 
 ### progress
 
@@ -167,6 +190,7 @@ The sync configuration, you can add multiple sync tasks.
 - `full`: whether to do a full sync, default is `false`.
 - `fields`: the fields to sync, if not set, it will sync all fields. The key is table field name, the value is the
   MeiliSearch field name, if not set, it will use the table field name.
+- `plugins`: the table level plugins.
 
 ### sentry (optional)
 

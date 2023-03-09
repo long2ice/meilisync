@@ -9,6 +9,41 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql
+        env:
+          MYSQL_ROOT_PASSWORD: 123456
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+      mongo:
+        image: mongo
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: root
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongo --eval 'db.runCommand({ connectionStatus: 1 })'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+      meilisearch:
+        image: getmeili/meilisearch:latest
+        ports:
+          - 7700:7700
+        options: --health-cmd="curl -f http://localhost:7700/health" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -20,5 +55,7 @@ jobs:
           poetry config virtualenvs.create false
       - name: Install dependencies
         run: poetry install
+      - name: Start meilisync
+        run: nohup meilisync -c tests/config/mysql.yml && nohup meilisync -c tests/config/postgres.yml && nohup meilisync -c tests/config/mongo.yml
       - name: CI
         run: make ci

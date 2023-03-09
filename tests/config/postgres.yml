@@ -1,0 +1,16 @@
+debug: true
+progress:
+  type: file
+source:
+  type: postgres
+  host: postgres
+  port: 5432
+  user: postgres
+  password: postgres
+  database: test
+meilisearch:
+  api_url: http://meilisearch:7700
+sync:
+  - table: test
+    index: postgres
+    full: false

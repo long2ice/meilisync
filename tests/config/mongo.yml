@@ -1,0 +1,16 @@
+debug: true
+progress:
+  type: file
+source:
+  type: mongo
+  host: mongo
+  port: 27017
+  user: root
+  password: root
+  database: test
+meilisearch:
+  api_url: http://meilisearch:7700
+sync:
+  - table: test
+    index: mongo
+    full: false
