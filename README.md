@@ -31,6 +31,12 @@ services:
     restart: always
 ```
 
+## Prerequisites
+
+- `MySQL`: `binlog_format = ROW`, use binary log.
+- `PostgreSQL`: `wal_level = logical` and install `wal2json` extension, use logical replication.
+- `MongoDB`: enable replica set mode, use change stream.
+
 ## Quick Start
 
 If you run `meilisync` without any arguments, it will try to load the configuration from `config.yml` in the current

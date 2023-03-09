@@ -9,33 +9,6 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql
-        env:
-          MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: test
-        ports:
-          - 3306:3306
-      postgres:
-        image: quay.io/aptible/postgresql:13-contrib
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test
-        ports:
-          - 5432:5432
-      mongo:
-        image: mongo
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: root
-        ports:
-          - 27017:27017
-      meilisearch:
-        image: getmeili/meilisearch:latest
-        ports:
-          - 7700:7700
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -47,10 +20,5 @@ jobs:
           poetry config virtualenvs.create false
       - name: Install dependencies
         run: poetry install -E all
-      - name: Start meilisync
-        run: >
-          meilisync --config tests/config/postgres.yml start &
-          meilisync --config tests/config/mongo.yml start &
-          meilisync --config tests/config/mysql.yml start &
-      - name: CI
-        run: make ci
+      - name: Check
+        run: make check
