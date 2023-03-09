@@ -10,7 +10,7 @@ source:
   password: root
   database: test
 meilisearch:
-  api_url: http://meilisearch:7700
+  api_url: http://localhost:7700
 sync:
   - table: test
     index: mongo

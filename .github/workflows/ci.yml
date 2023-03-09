@@ -18,7 +18,7 @@ jobs:
         ports:
           - 3306:3306
       postgres:
-        image: debezium/postgres:15-alpine
+        image: quay.io/aptible/postgresql:13-contrib
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
