@@ -1,28 +1,28 @@
 [tool.poetry]
-name = "meilisync"
-version = "0.1.0"
-description = "Realtime sync data from MySQL/PostgreSQL/MongoDB to meilisearch"
 authors = ["long2ice <long2ice@gmail.com>"]
-readme = "README.md"
+description = "Realtime sync data from MySQL/PostgreSQL/MongoDB to meilisearch"
 documentation = "https://github.com/meilisync/meilisync"
 include = ["CHANGELOG.md", "LICENSE", "README.md"]
 keywords = ["meilisearch", "postgres", "mysql"]
 license = "Apache-2.0"
+name = "meilisync"
 packages = [
-    { include = "meilisync" },
+  {include = "meilisync"},
 ]
+readme = "README.md"
 repository = "https://github.com/meilisync/meilisync.git"
+version = "0.1.1"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-asyncmy = { version = "*", optional = true }
-meilisearch-python-async = "*"
-pyyaml = "*"
-loguru = "*"
 aiofiles = "*"
+asyncmy = {version = "*", optional = true}
+loguru = "*"
+meilisearch-python-async = "*"
+motor = {version = "*", optional = true}
+psycopg2-binary = {version = "*", optional = true}
+python = "^3.9"
+pyyaml = "*"
 redis = "*"
-psycopg2-binary = { version = "*", optional = true }
-motor = { version = "*", optional = true }
 sentry-sdk = "*"
 typer = {version = "*", extras = ["all"]}
 
@@ -31,27 +31,27 @@ black = "*"
 isort = "*"
 mypy = "*"
 pytest = "*"
-ruff = "*"
-types-pyyaml = "*"
-types-aiofiles = "*"
-pytest-custom-exit-code = "*"
-types-redis = "*"
 pytest-asyncio = "*"
+pytest-custom-exit-code = "*"
+ruff = "*"
+types-aiofiles = "*"
+types-pyyaml = "*"
+types-redis = "*"
 
 [tool.poetry.extras]
-mysql = ["asyncmy"]
-redis = ["redis"]
-postgres = ["psycopg2-binary"]
-mongodb = ["motor"]
-sentry = ["sentry-sdk"]
 all = ["asyncmy", "redis", "psycopg2-binary", "motor", "sentry-sdk"]
+mongodb = ["motor"]
+mysql = ["asyncmy"]
+postgres = ["psycopg2-binary"]
+redis = ["redis"]
+sentry = ["sentry-sdk"]
 
 [tool.poetry.scripts]
 meilisync = "meilisync.main:app"
 
 [build-system]
-requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
 
 [tool.isort]
 profile = "black"
