@@ -93,6 +93,7 @@ Here is an example configuration file:
 ```yaml
 debug: true
 plugins:
+  - meilisync.plugin.Plugin
 progress:
   type: file
 source:
@@ -111,6 +112,7 @@ sync:
   - table: collection
     index: beauty-collections
     plugins:
+      - meilisync.plugin.Plugin
     full: true
     fields:
       id:
@@ -135,7 +137,7 @@ Enable debug mode, default is `false`, if you want to see more logs, you can set
 
 ### plugins (optional)
 
-The plugins is used to customize the data before or after insert to MeiliSearch and the plugins is a list of python modules.
+The plugins are used to customize the data before or after insert to MeiliSearch and the plugins is a list of python modules.
 
 Which is a python class with `pre_event` and `post_event` methods, the `pre_event` method is called before insert to MeiliSearch, the `post_event` method is called after insert to MeiliSearch.
 
@@ -196,7 +198,7 @@ The sync configuration, you can add multiple sync tasks.
 - `full`: whether to do a full sync, default is `false`.
 - `fields`: the fields to sync, if not set, it will sync all fields. The key is table field name, the value is the
   MeiliSearch field name, if not set, it will use the table field name.
-- `plugins`: the table level plugins.
+- `plugins`: the table level plugins, optional.
 
 ### sentry (optional)
 
