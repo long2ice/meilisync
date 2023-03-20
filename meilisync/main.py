@@ -10,6 +10,7 @@ from meilisync.event import EventCollection
 from meilisync.meili import Meili
 from meilisync.schemas import Event
 from meilisync.settings import Settings
+from meilisync.version import __VERSION__
 
 app = typer.Typer()
 
@@ -25,6 +26,8 @@ def callback(
     ),
 ):
     async def _():
+        if context.invoked_subcommand == "version":
+            return
         context.ensure_object(dict)
         with open(config_file) as f:
             config = f.read()
@@ -56,6 +59,11 @@ def callback(
         context.obj["progress"] = progress
 
     asyncio.run(_())
+
+
+@app.command(help="Show meilisync version")
+def version():
+    typer.echo(__VERSION__)
 
 
 @app.command(help="Start meilisync")
@@ -129,7 +137,7 @@ def start(
     asyncio.run(run())
 
 
-@app.command(help="Delete all data in MeiliSearch and full sync")
+@app.command(help="Refresh all data by swap index")
 def refresh(
     context: typer.Context,
     table: Optional[List[str]] = typer.Option(
@@ -142,10 +150,10 @@ def refresh(
         meili = context.obj["meili"]
         for sync in settings.sync:
             if not table or sync.table in table:
-                await meili.delete_all_data(sync.index_name)
+                index_name = sync.index_name
                 data = await source.get_full_data(sync)
                 if data:
-                    await meili.add_full_data(sync.index_name, sync.pk, data)
+                    await meili.refresh_data(index_name, sync.pk, data)
                     logger.info(
                         f'Full data sync for table "{settings.source.database}.{sync.table}" '
                         f"done! {len(data)} documents added."

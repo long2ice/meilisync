@@ -6,25 +6,23 @@ include = ["CHANGELOG.md", "LICENSE", "README.md"]
 keywords = ["meilisearch", "postgres", "mysql"]
 license = "Apache-2.0"
 name = "meilisync"
-packages = [
-  {include = "meilisync"},
-]
+packages = [{ include = "meilisync" }]
 readme = "README.md"
 repository = "https://github.com/meilisync/meilisync.git"
-version = "0.1.1"
+version = "0.1.2"
 
 [tool.poetry.dependencies]
 aiofiles = "*"
-asyncmy = {version = "*", optional = true}
+asyncmy = { version = "*", optional = true }
 loguru = "*"
 meilisearch-python-async = "*"
-motor = {version = "*", optional = true}
-psycopg2-binary = {version = "*", optional = true}
+motor = { version = "*", optional = true }
+psycopg2-binary = { version = "*", optional = true }
 python = "^3.9"
 pyyaml = "*"
 redis = "*"
 sentry-sdk = "*"
-typer = {version = "*", extras = ["all"]}
+typer = { version = "*", extras = ["all"] }
 
 [tool.poetry.group.dev.dependencies]
 black = "*"

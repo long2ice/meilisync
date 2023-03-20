@@ -1,6 +1,9 @@
+import asyncio
 from typing import List, Optional, Type, Union
 
+from loguru import logger
 from meilisearch_python_async import Client
+from meilisearch_python_async.task import wait_for_task
 
 from meilisync.enums import EventType
 from meilisync.event import EventCollection
@@ -23,13 +26,20 @@ class Meili:
         self.plugins = plugins or []
 
     async def add_full_data(self, index: str, pk: str, data: list):
-        batch_size = 1000
-        await self.client.index(index).add_documents_in_batches(
-            data, batch_size=batch_size, primary_key=pk
+        return await self.client.index(index).add_documents_in_batches(
+            data, batch_size=1000, primary_key=pk
         )
 
-    async def delete_all_data(self, index: str):
-        await self.client.index(index).delete_all_documents()
+    async def refresh_data(self, index: str, pk: str, data: list):
+        index_name_tmp = f"{index}_tmp"
+        tasks = await self.add_full_data(index_name_tmp, pk, data)
+        wait_tasks = [wait_for_task(client=self.client, task_id=item.task_uid) for item in tasks]
+        logger.info("Waiting for insert temp index to complete...")
+        await asyncio.gather(*wait_tasks)
+        task = await self.client.swap_indexes([(index, index_name_tmp)])
+        logger.info("Waiting for swap index to complete...")
+        await wait_for_task(client=self.client, task_id=task.task_uid)
+        await self.client.index(index_name_tmp).delete()
 
     async def get_count(self, index: str):
         stats = await self.client.index(index).get_stats()

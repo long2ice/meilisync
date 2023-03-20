@@ -44,9 +44,9 @@ directory.
 
 ```shell
 ❯ meilisync --help
-
- Usage: meilisync [OPTIONS] COMMAND [ARGS]...
-
+                                                                                                                                                                                      
+ Usage: meilisync [OPTIONS] COMMAND [ARGS]...                                                                                                                                         
+                                                                                                                                                                                      
 ╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ --config              -c      TEXT  Config file path [default: config.yml]                                                                                                         │
 │ --install-completion                Install completion for the current shell.                                                                                                      │
@@ -55,8 +55,9 @@ directory.
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ check            Check whether the data in the database is consistent with the data in MeiliSearch                                                                                 │
-│ refresh          Delete all data in MeiliSearch and full sync                                                                                                                      │
+│ refresh          Refresh all data by swap index                                                                                                                                    │
 │ start            Start meilisync                                                                                                                                                   │
+│ version          Show meilisync version                                                                                                                                            │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
@@ -71,7 +72,7 @@ Start sync data from MySQL to MeiliSearch:
 
 ### Refresh sync
 
-Delete all data in MeiliSearch and full sync:
+Refresh all data by swap index:
 
 ```shell
 ❯ meilisync refresh -t test
