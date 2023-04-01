@@ -3,6 +3,7 @@ from typing import List, Optional, Type, Union
 
 from loguru import logger
 from meilisearch_python_async import Client
+from meilisearch_python_async.errors import MeilisearchApiError
 from meilisearch_python_async.task import wait_for_task
 
 from meilisync.enums import EventType
@@ -44,6 +45,15 @@ class Meili:
     async def get_count(self, index: str):
         stats = await self.client.index(index).get_stats()
         return stats.number_of_documents
+
+    async def index_exists(self, index: str):
+        try:
+            await self.client.get_index(index)
+            return True
+        except MeilisearchApiError as e:
+            if e.code == "index_not_found":
+                return False
+            raise e
 
     async def handle_events(self, collection: EventCollection):
         created_events, updated_events, deleted_events = collection.pop_events
