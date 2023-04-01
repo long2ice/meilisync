@@ -19,12 +19,14 @@ class Meili:
         api_url: str,
         api_key: str,
         plugins: Optional[List[Union[Type[Plugin], Plugin]]] = None,
+        wait_for_task_timeout: int = 10000,
     ):
         self.client = Client(
             api_url,
             api_key,
         )
         self.plugins = plugins or []
+        self.wait_for_task_timeout = wait_for_task_timeout
 
     async def add_full_data(self, index: str, pk: str, data: list):
         return await self.client.index(index).add_documents_in_batches(
@@ -34,12 +36,19 @@ class Meili:
     async def refresh_data(self, index: str, pk: str, data: list):
         index_name_tmp = f"{index}_tmp"
         tasks = await self.add_full_data(index_name_tmp, pk, data)
-        wait_tasks = [wait_for_task(client=self.client, task_id=item.task_uid) for item in tasks]
+        wait_tasks = [
+            wait_for_task(
+                client=self.client, task_id=item.task_uid, timeout_in_ms=self.wait_for_task_timeout
+            )
+            for item in tasks
+        ]
         logger.info("Waiting for insert temp index to complete...")
         await asyncio.gather(*wait_tasks)
         task = await self.client.swap_indexes([(index, index_name_tmp)])
         logger.info("Waiting for swap index to complete...")
-        await wait_for_task(client=self.client, task_id=task.task_uid)
+        await wait_for_task(
+            client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
+        )
         await self.client.index(index_name_tmp).delete()
 
     async def get_count(self, index: str):
