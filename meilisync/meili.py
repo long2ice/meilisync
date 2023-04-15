@@ -35,6 +35,13 @@ class Meili:
 
     async def refresh_data(self, index: str, pk: str, data: list):
         index_name_tmp = f"{index}_tmp"
+        settings = await self.client.index(index).get_settings()
+        index_tmp = await self.client.create_index(index_name_tmp, primary_key=pk)
+        task = await index_tmp.update_settings(settings)
+        logger.info(f"Waiting for update tmp index {index_name_tmp} settings to complete...")
+        await wait_for_task(
+            client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
+        )
         tasks = await self.add_full_data(index_name_tmp, pk, data)
         wait_tasks = [
             wait_for_task(
@@ -42,14 +49,8 @@ class Meili:
             )
             for item in tasks
         ]
-        logger.info("Waiting for insert temp index to complete...")
+        logger.info(f"Waiting for insert temp index {index_name_tmp} to complete...")
         await asyncio.gather(*wait_tasks)
-        settings = await self.client.index(index).get_settings()
-        logger.info("Waiting for update settings to complete...")
-        task = await self.client.index(index_name_tmp).update_settings(settings)
-        await wait_for_task(
-            client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
-        )
         task = await self.client.swap_indexes([(index, index_name_tmp)])
         logger.info("Waiting for swap index to complete...")
         await wait_for_task(
