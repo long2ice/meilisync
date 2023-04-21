@@ -7,7 +7,7 @@
 
 ## Introduction
 
-Realtime sync data from MySQL/PostgreSQL/MongoDB to meilisearch.
+Realtime sync data from MySQL/PostgreSQL/MongoDB to Meilisearch.
 
 ## Install
 
@@ -54,7 +54,7 @@ directory.
 │ --help                              Show this message and exit.                                                                                                                    │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ check            Check whether the data in the database is consistent with the data in MeiliSearch                                                                                 │
+│ check            Check whether the data in the database is consistent with the data in Meilisearch                                                                                 │
 │ refresh          Refresh all data by swap index                                                                                                                                    │
 │ start            Start meilisync                                                                                                                                                   │
 │ version          Show meilisync version                                                                                                                                            │
@@ -63,11 +63,11 @@ directory.
 
 ### Start sync
 
-Start sync data from MySQL to MeiliSearch:
+Start sync data from MySQL to Meilisearch:
 
 ```shell
 ❯ meilisync start
-2023-03-07 08:37:25.656 | INFO     | meilisync.main:_:86 - Start increment sync data from "mysql" to MeiliSearch...
+2023-03-07 08:37:25.656 | INFO     | meilisync.main:_:86 - Start increment sync data from "mysql" to Meilisearch...
 ```
 
 ### Refresh sync
@@ -80,7 +80,7 @@ Refresh all data by swap index:
 
 ### Check sync
 
-Check whether the data in the database is consistent with the data in MeiliSearch:
+Check whether the data in the database is consistent with the data in Meilisearch:
 
 ```shell
 ❯ meilisync check -t test
@@ -138,9 +138,9 @@ Enable debug mode, default is `false`, if you want to see more logs, you can set
 
 ### plugins (optional)
 
-The plugins are used to customize the data before or after insert to MeiliSearch and the plugins is a list of python modules.
+The plugins are used to customize the data before or after insert to Meilisearch and the plugins is a list of python modules.
 
-Which is a python class with `pre_event` and `post_event` methods, the `pre_event` method is called before insert to MeiliSearch, the `post_event` method is called after insert to MeiliSearch.
+Which is a python class with `pre_event` and `post_event` methods, the `pre_event` method is called before insert to Meilisearch, the `post_event` method is called after insert to Meilisearch.
 
 ```python
 class Plugin:
@@ -178,10 +178,10 @@ Source database configuration, currently only support MySQL and PostgreSQL and M
 
 ### meilisearch
 
-MeiliSearch configuration.
+Meilisearch configuration.
 
-- `api_url`: the MeiliSearch API URL.
-- `api_key`: the MeiliSearch API key.
+- `api_url`: the Meilisearch API URL.
+- `api_key`: the Meilisearch API key.
 - `insert_size`: insert after collecting this many documents, optional.
 - `insert_interval`: insert after this many seconds have passed, optional.
 
@@ -195,10 +195,10 @@ one of the conditions is met.
 The sync configuration, you can add multiple sync tasks.
 
 - `table`: the database table name or collection name.
-- `index`: the MeiliSearch index name, if not set, it will use the table name.
+- `index`: the Meilisearch index name, if not set, it will use the table name.
 - `full`: whether to do a full sync, default is `false`.
 - `fields`: the fields to sync, if not set, it will sync all fields. The key is table field name, the value is the
-  MeiliSearch field name, if not set, it will use the table field name.
+  Meilisearch field name, if not set, it will use the table field name.
 - `plugins`: the table level plugins, optional.
 
 ### sentry (optional)
