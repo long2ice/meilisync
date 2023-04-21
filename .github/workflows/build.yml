@@ -20,4 +20,5 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: long2ice/meilisync
