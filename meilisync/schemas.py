@@ -1,3 +1,5 @@
+import datetime
+
 from typing import Optional
 
 from pydantic import BaseModel
@@ -15,10 +17,14 @@ class Event(ProgressEvent):
     data: dict
 
     def mapping_data(self, fields_mapping: Optional[dict] = None):
-        if not fields_mapping:
-            return self.data
         data = {}
         for k, v in self.data.items():
-            if k in fields_mapping:
-                data[fields_mapping[k] or k] = v
+            if isinstance(v, datetime.datetime):
+                v = int(v.timestamp())
+
+            if (fields_mapping is not None) and k in fields_mapping:
+                data[fields_mapping[k]] = v
+            else:
+                data[k] = v
+
         return data or self.data

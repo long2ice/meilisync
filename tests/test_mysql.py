@@ -17,14 +17,14 @@ async def test_sync():
     )
     async with conn.cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS test")
-        await cur.execute("CREATE TABLE IF NOT EXISTS test (id INT PRIMARY KEY, age INT)")
-        await cur.execute("INSERT INTO test (id, age) VALUES (%s, %s)", (1, 18))
+        await cur.execute(
+            "CREATE TABLE IF NOT EXISTS test (id INT PRIMARY KEY, age INT, time timestamp NOT NULL)"
+        )
+        await cur.execute(
+            "INSERT INTO test (id, age, time) VALUES (%s, %s, %s)",
+            (1, 46, "1977-01-27 22:00:53"),
+        )
         await conn.commit()
     await asyncio.sleep(2)
     ret = await index.get_documents()
-    assert ret.results == [
-        {
-            "id": 1,
-            "age": 18,
-        }
-    ]
+    assert ret.results == [{"id": 1, "age": 46, "time": 223250453}]
