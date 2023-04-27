@@ -4,6 +4,7 @@
 [![image](https://img.shields.io/github/license/meilisync/meilisync)](https://github.com/meilisync/meilisync)
 [![image](https://github.com/meilisync/meilisync/workflows/pypi/badge.svg)](https://github.com/meilisync/meilisync/actions?query=workflow:pypi)
 [![image](https://github.com/meilisync/meilisync/workflows/ci/badge.svg)](https://github.com/meilisync/meilisync/actions?query=workflow:ci)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/meilisync?color=5cc141)](https://github.com/long2ice/meilisync)
 
 ## Introduction
 
