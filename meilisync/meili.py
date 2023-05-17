@@ -57,7 +57,7 @@ class Meili:
             client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
         )
         await self.client.index(index_name_tmp).delete()
-        logger.success("Swap index completed!")
+        logger.success(f"Swap index {index} complete")
 
     async def get_count(self, index: str):
         stats = await self.client.index(index).get_stats()

@@ -21,9 +21,9 @@ class Event(ProgressEvent):
             if isinstance(v, datetime.datetime):
                 v = int(v.timestamp())
 
-            if (fields_mapping is not None) and k in fields_mapping:
-                data[fields_mapping[k]] = v
+            if fields_mapping is not None and k in fields_mapping:
+                real_k = fields_mapping[k] or k
+                data[real_k] = v
             else:
                 data[k] = v
-
         return data or self.data
