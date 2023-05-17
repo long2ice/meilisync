@@ -19,7 +19,7 @@ class Meili:
         api_url: str,
         api_key: str,
         plugins: Optional[List[Union[Type[Plugin], Plugin]]] = None,
-        wait_for_task_timeout: int = 60 * 10 * 1000,
+        wait_for_task_timeout: Optional[int] = None,
     ):
         self.client = Client(
             api_url,
