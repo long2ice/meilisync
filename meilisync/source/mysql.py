@@ -26,7 +26,7 @@ class MySQL(Source):
         **kwargs,
     ):
         super().__init__(progress, tables, **kwargs)
-        self.server_id = server_id
+        self.server_id = int(server_id)
         self.database = kwargs.get("database")
 
     async def get_full_data(self, sync: Sync):
