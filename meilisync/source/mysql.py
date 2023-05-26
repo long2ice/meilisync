@@ -49,7 +49,7 @@ class MySQL(Source):
 
     async def ping(self):
         conn = await asyncmy.connect(**self.kwargs)
-        return conn.ping()
+        return await conn.ping()
 
     async def _get_binlog_position(self):
         async with self.conn.cursor(cursor=DictCursor) as cur:

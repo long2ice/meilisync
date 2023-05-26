@@ -116,7 +116,7 @@ class Postgres(Source):
             cur.execute("SELECT 1")
 
     async def ping(self):
-        await asyncio.get_event_loop().run_in_executor(self._ping)
+        await asyncio.get_event_loop().run_in_executor(None, self._ping)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.cursor.close()
