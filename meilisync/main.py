@@ -148,11 +148,13 @@ def refresh(
         settings = context.obj["settings"]
         source = context.obj["source"]
         meili = context.obj["meili"]
+        progress = context.obj["progress"]
         for sync in settings.sync:
             if not table or sync.table in table:
                 index_name = sync.index_name
                 data = await source.get_full_data(sync)
                 if data:
+                    await progress.reset()
                     await meili.refresh_data(index_name, sync.pk, data)
                     logger.info(
                         f'Full data sync for table "{settings.source.database}.{sync.table}" '

@@ -45,9 +45,9 @@ directory.
 
 ```shell
 ❯ meilisync --help
-                                                                                                                                                                                      
- Usage: meilisync [OPTIONS] COMMAND [ARGS]...                                                                                                                                         
-                                                                                                                                                                                      
+
+ Usage: meilisync [OPTIONS] COMMAND [ARGS]...
+
 ╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ --config              -c      TEXT  Config file path [default: config.yml]                                                                                                         │
 │ --install-completion                Install completion for the current shell.                                                                                                      │
@@ -79,9 +79,11 @@ Refresh all data by swap index:
 ❯ meilisync refresh -t test
 ```
 
+Before refresh, you need stop the sync process first to avoid data inconsistency.
+
 ### Check sync
 
-Check whether the data in the database is consistent with the data in Meilisearch:
+Check whether the data count in the database is consistent with the data in Meilisearch:
 
 ```shell
 ❯ meilisync check -t test
