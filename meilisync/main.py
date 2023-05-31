@@ -84,9 +84,9 @@ def start(
             if sync.full and not await meili.index_exists(sync.index_name):
                 count = 0
                 await progress.reset()
-                async for item in source.get_full_data(sync, meili_settings.insert_size or 10000):
-                    count += len(item)
-                    await meili.add_full_data(sync.index_name, sync.pk, item)
+                async for items in source.get_full_data(sync, meili_settings.insert_size or 10000):
+                    count += len(items)
+                    await meili.add_full_data(sync.index_name, sync.pk, items)
                 if count:
                     logger.info(
                         f'Full data sync for table "{settings.source.database}.{sync.table}" '
@@ -152,21 +152,17 @@ def refresh(
     async def _():
         settings = context.obj["settings"]
         source = context.obj["source"]
-        meili = context.obj["meili"]
+        meili = context.obj["meili"]  # type: Meili
         progress = context.obj["progress"]
         for sync in settings.sync:
             if not table or sync.table in table:
                 index_name = sync.index_name
-                data = await source.get_full_data(sync, size)
-                count = 0
                 await progress.reset()
-                for item in data:
-                    count += len(item)
-                    await meili.refresh_data(
-                        index_name,
-                        sync.pk,
-                        item,
-                    )
+                count = await meili.refresh_data(
+                    index_name,
+                    sync.pk,
+                    source.get_full_data(sync, size),
+                )
                 if count:
                     logger.info(
                         f'Full data sync for table "{settings.source.database}.{sync.table}" '

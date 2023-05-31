@@ -1,6 +1,7 @@
 import json
 
 import aiofiles
+import aiofiles.os
 
 from meilisync.enums import ProgressType
 from meilisync.progress import Progress
