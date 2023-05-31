@@ -1,5 +1,5 @@
 import asyncio
-from typing import AsyncGenerator, Iterable, List, Optional, Type, Union
+from typing import AsyncGenerator, List, Optional, Type, Union
 
 from loguru import logger
 from meilisearch_python_async import Client
@@ -35,6 +35,11 @@ class Meili:
 
     async def refresh_data(self, index: str, pk: str, data: AsyncGenerator):
         index_name_tmp = f"{index}_tmp"
+        try:
+            await self.client.index(index_name_tmp).delete()
+        except MeilisearchApiError as e:
+            if e.code != "MeilisearchApiError.index_not_found":
+                raise
         settings = await self.client.index(index).get_settings()
         index_tmp = await self.client.create_index(index_name_tmp, primary_key=pk)
         task = await index_tmp.update_settings(settings)
