@@ -23,6 +23,9 @@ class Source:
     async def get_full_data(self, sync: Sync, size: int):
         raise NotImplementedError
 
+    async def get_current_progress(self):
+        raise NotImplementedError
+
     async def get_count(self, sync: Sync):
         raise NotImplementedError
 

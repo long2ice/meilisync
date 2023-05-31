@@ -27,9 +27,3 @@ class File(Progress):
                 return json.loads(await f.read())
         except FileNotFoundError:
             return None
-
-    async def reset(self):
-        try:
-            await aiofiles.os.remove(self.path)
-        except FileNotFoundError:
-            pass

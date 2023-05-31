@@ -37,6 +37,17 @@ class Postgres(Source):
             **self.kwargs, cursor_factory=psycopg2.extras.RealDictCursor
         )
 
+    async def get_current_progress(self):
+        sql = "SELECT pg_current_wal_lsn()"
+
+        def _():
+            with self.conn.cursor() as cur:
+                cur.execute(sql)
+                ret = cur.fetchone()
+                return ret[0]
+
+        return await asyncio.get_event_loop().run_in_executor(None, _)
+
     async def get_full_data(self, sync: Sync, size: int):
         def _():
             with self.conn_dict.cursor() as cur:

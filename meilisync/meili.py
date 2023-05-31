@@ -58,7 +58,7 @@ class Meili:
             )
             for item in tasks
         ]
-        logger.info(f"Waiting for insert temp index {index_name_tmp} to complete...")
+        logger.info(f"Waiting for insert tmp index {index_name_tmp} to complete...")
         await asyncio.gather(*wait_tasks)
         task = await self.client.swap_indexes([(index, index_name_tmp)])
         logger.info("Waiting for swap index to complete...")

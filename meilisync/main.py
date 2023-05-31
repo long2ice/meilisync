@@ -80,10 +80,10 @@ def start(
     lock = None
 
     async def _():
+        nonlocal current_progress
         for sync in settings.sync:
             if sync.full and not await meili.index_exists(sync.index_name):
                 count = 0
-                await progress.reset()
                 async for items in source.get_full_data(sync, meili_settings.insert_size or 10000):
                     count += len(items)
                     await meili.add_full_data(sync.index_name, sync.pk, items)
@@ -100,7 +100,6 @@ def start(
         async for event in source:
             if settings.debug:
                 logger.debug(event)
-            nonlocal current_progress
             current_progress = event.progress
             if isinstance(event, Event):
                 sync = settings.get_sync(event.table)
@@ -157,7 +156,8 @@ def refresh(
         for sync in settings.sync:
             if not table or sync.table in table:
                 index_name = sync.index_name
-                await progress.reset()
+                current_progress = await source.get_current_progress()
+                await progress.set(**current_progress)
                 count = await meili.refresh_data(
                     index_name,
                     sync.pk,

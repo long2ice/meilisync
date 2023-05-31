@@ -21,6 +21,3 @@ class Redis(Progress):
 
     async def get(self):
         return await self.redis.hgetall(self.key)
-
-    async def reset(self):
-        await self.redis.delete(self.key)

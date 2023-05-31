@@ -56,14 +56,18 @@ class MySQL(Source):
             return ret["count"]
 
     async def ping(self):
-        conn = await asyncmy.connect(**self.kwargs)
-        return await conn.ping()
+        async with asyncmy.connect(**self.kwargs) as conn:
+            return await conn.ping()
 
-    async def _get_binlog_position(self):
-        async with self.conn.cursor(cursor=DictCursor) as cur:
-            await cur.execute("SHOW MASTER STATUS")
-            ret = await cur.fetchone()
-            return ret["File"], ret["Position"]
+    async def get_current_progress(self):
+        async with asyncmy.connect(**self.kwargs) as conn:
+            async with conn.cursor(cursor=DictCursor) as cur:
+                await cur.execute("SHOW MASTER STATUS")
+                ret = await cur.fetchone()
+                return {
+                    "master_log_file": ret["File"],
+                    "master_log_position": ret["Position"],
+                }
 
     async def __aiter__(self):
         self.conn = await asyncmy.connect(**self.kwargs)
@@ -72,7 +76,9 @@ class MySQL(Source):
             master_log_file = self.progress["master_log_file"]
             master_log_position = int(self.progress["master_log_position"])
         else:
-            master_log_file, master_log_position = await self._get_binlog_position()
+            progress = await self.get_current_progress()
+            master_log_file = progress["master_log_file"]
+            master_log_position = int(progress["master_log_position"])
         yield ProgressEvent(
             progress={
                 "master_log_file": master_log_file,

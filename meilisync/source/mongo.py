@@ -40,6 +40,12 @@ class Mongo(Source):
     async def ping(self):
         return await self.client.admin.command("ping")
 
+    async def get_current_progress(self):
+        pipeline = [{"$match": {"operationType": {"$in": ["insert", "update", "delete"]}}}]
+        async with self.db.watch(pipeline) as stream:
+            async for _ in stream:
+                return {"resume_token": stream.resume_token}
+
     async def __aiter__(self):
         pipeline = [{"$match": {"operationType": {"$in": ["insert", "update", "delete"]}}}]
         if self.progress:

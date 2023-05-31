@@ -12,6 +12,3 @@ class Progress:
 
     async def get(self):
         raise NotImplementedError
-
-    async def reset(self):
-        raise NotImplementedError
