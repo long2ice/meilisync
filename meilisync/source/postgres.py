@@ -37,15 +37,20 @@ class Postgres(Source):
             **self.kwargs, cursor_factory=psycopg2.extras.RealDictCursor
         )
 
-    async def get_full_data(self, sync: Sync):
+    async def get_full_data(self, sync: Sync, size: int):
         with self.conn_dict.cursor() as cur:
             if sync.fields:
                 fields = ", ".join(f"{field} as {sync.fields[field]}" for field in sync.fields)
             else:
                 fields = "*"
-            cur.execute(f"SELECT {fields} FROM {sync.table}")
-            ret = cur.fetchall()
-            return ret
+            while True:
+                cur.execute(
+                    f"SELECT {fields} FROM {sync.table} ORDER BY {sync.pk} LIMIT {size} OFFSET {cur.rowcount}"
+                )
+                ret = cur.fetchall()
+                if not ret:
+                    break
+                yield ret
 
     def _consumer(self, msg: ReplicationMessage):
         payload = json.loads(msg.payload)

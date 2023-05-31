@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Optional, Type, Union
+from typing import Iterable, List, Optional, Type, Union
 
 from loguru import logger
 from meilisearch_python_async import Client
@@ -33,7 +33,7 @@ class Meili:
             data, batch_size=1000, primary_key=pk
         )
 
-    async def refresh_data(self, index: str, pk: str, data: list):
+    async def refresh_data(self, index: str, pk: str, data: Iterable[list]):
         index_name_tmp = f"{index}_tmp"
         settings = await self.client.index(index).get_settings()
         index_tmp = await self.client.create_index(index_name_tmp, primary_key=pk)
@@ -42,7 +42,9 @@ class Meili:
         await wait_for_task(
             client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
         )
-        tasks = await self.add_full_data(index_name_tmp, pk, data)
+        tasks = []
+        for items in data:
+            tasks.extend(await self.add_full_data(index_name_tmp, pk, items))
         wait_tasks = [
             wait_for_task(
                 client=self.client, task_id=item.task_uid, timeout_in_ms=self.wait_for_task_timeout

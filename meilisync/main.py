@@ -80,21 +80,19 @@ def start(
     lock = None
 
     async def _():
-        nonlocal current_progress
-        if not current_progress:
-            for sync in settings.sync:
-                if sync.full:
-                    data = await source.get_full_data(sync)
-                    if data:
-                        await meili.add_full_data(sync.index_name, sync.pk, data)
-                        logger.info(
-                            f'Full data sync for table "{settings.source.database}.{sync.table}" '
-                            f"done! {len(data)} documents added."
-                        )
-                    else:
-                        logger.info(
-                            f'No data found for table "{settings.source.database}.{sync.table}".'
-                        )
+        for sync in settings.sync:
+            if sync.full and not await meili.index_exists(sync.index_name):
+                data = await source.get_full_data(sync, meili_settings.insert_size or 10000)
+                if data:
+                    await meili.add_full_data(sync.index_name, sync.pk, data)
+                    logger.info(
+                        f'Full data sync for table "{settings.source.database}.{sync.table}" '
+                        f"done! {len(data)} documents added."
+                    )
+                else:
+                    logger.info(
+                        f'No data found for table "{settings.source.database}.{sync.table}".'
+                    )
         logger.info(f'Start increment sync data from "{settings.source.type}" to MeiliSearch...')
         async for event in source:
             if settings.debug:
@@ -143,6 +141,9 @@ def refresh(
     table: Optional[List[str]] = typer.Option(
         None, "-t", "--table", help="Table name, if not set, all tables"
     ),
+    size: int = typer.Option(
+        10000, "-s", "--size", help="Size of data for each insert to be inserted into MeiliSearch"
+    ),
 ):
     async def _():
         settings = context.obj["settings"]
@@ -152,10 +153,14 @@ def refresh(
         for sync in settings.sync:
             if not table or sync.table in table:
                 index_name = sync.index_name
-                data = await source.get_full_data(sync)
+                data = await source.get_full_data(sync, size)
                 if data:
+                    await meili.refresh_data(
+                        index_name,
+                        sync.pk,
+                        data,
+                    )
                     await progress.reset()
-                    await meili.refresh_data(index_name, sync.pk, data)
                     logger.info(
                         f'Full data sync for table "{settings.source.database}.{sync.table}" '
                         f"done! {len(data)} documents added."

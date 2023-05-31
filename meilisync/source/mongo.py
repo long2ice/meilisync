@@ -17,7 +17,7 @@ class Mongo(Source):
         self.client = motor.motor_asyncio.AsyncIOMotorClient(**self.kwargs)
         self.db = self.client[database]
 
-    async def get_full_data(self, sync: Sync):
+    async def get_full_data(self, sync: Sync, size: int):
         collection = self.db[sync.table]
         if sync.fields:
             fields = {field: sync.fields[field] for field in sync.fields}
@@ -27,7 +27,11 @@ class Mongo(Source):
         ret = []
         async for doc in cursor:
             ret.append(doc)
-        return ret
+            if len(ret) == size:
+                yield ret
+                ret = []
+        if ret:
+            yield ret
 
     async def get_count(self, sync: Sync):
         collection = self.db[sync.table]
