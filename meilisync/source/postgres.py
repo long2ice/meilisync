@@ -45,7 +45,8 @@ class Postgres(Source):
                 fields = "*"
             while True:
                 cur.execute(
-                    f"SELECT {fields} FROM {sync.table} ORDER BY {sync.pk} LIMIT {size} OFFSET {cur.rowcount}"
+                    f"SELECT {fields} FROM {sync.table} ORDER BY "
+                    f"{sync.pk} LIMIT {size} OFFSET {cur.rowcount}"
                 )
                 ret = cur.fetchall()
                 if not ret:

@@ -38,7 +38,8 @@ class MySQL(Source):
         async with conn.cursor(cursor=DictCursor) as cur:
             while True:
                 await cur.execute(
-                    f"SELECT {fields} FROM {sync.table} ORDER BY {sync.pk} LIMIT {size} OFFSET {cur.rowcount}"
+                    f"SELECT {fields} FROM {sync.table} "
+                    f"ORDER BY {sync.pk} LIMIT {size} OFFSET {cur.rowcount}"
                 )
                 ret = await cur.fetchall()
                 if not ret:
