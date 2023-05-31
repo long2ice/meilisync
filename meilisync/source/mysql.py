@@ -36,14 +36,16 @@ class MySQL(Source):
         else:
             fields = "*"
         async with conn.cursor(cursor=DictCursor) as cur:
+            offset = 0
             while True:
                 await cur.execute(
                     f"SELECT {fields} FROM {sync.table} "
-                    f"ORDER BY {sync.pk} LIMIT {size} OFFSET {cur.rowcount}"
+                    f"ORDER BY {sync.pk} LIMIT {size} OFFSET {offset}"
                 )
                 ret = await cur.fetchall()
                 if not ret:
                     break
+                offset += size
                 yield ret
 
     async def get_count(self, sync: Sync):

@@ -82,9 +82,9 @@ def start(
     async def _():
         for sync in settings.sync:
             if sync.full and not await meili.index_exists(sync.index_name):
-                data = await source.get_full_data(sync, meili_settings.insert_size or 10000)
                 count = 0
-                for item in data:
+                await progress.reset()
+                async for item in source.get_full_data(sync, meili_settings.insert_size or 10000):
                     count += len(item)
                     await meili.add_full_data(sync.index_name, sync.pk, item)
                 if count:
@@ -153,12 +153,13 @@ def refresh(
         settings = context.obj["settings"]
         source = context.obj["source"]
         meili = context.obj["meili"]
-        context.obj["progress"]
+        progress = context.obj["progress"]
         for sync in settings.sync:
             if not table or sync.table in table:
                 index_name = sync.index_name
                 data = await source.get_full_data(sync, size)
                 count = 0
+                await progress.reset()
                 for item in data:
                     count += len(item)
                     await meili.refresh_data(
