@@ -30,10 +30,12 @@ class Meili:
 
     async def add_full_data(self, index: str, pk: str, data: AsyncGenerator):
         tasks = []
+        count = 0
         async for items in data:
+            count += len(items)
             task = await self.client.index(index).add_documents(items, primary_key=pk)
             tasks.append(task)
-        return tasks
+        return tasks, count
 
     async def refresh_data(self, index: str, pk: str, data: AsyncGenerator):
         index_name_tmp = f"{index}_tmp"
@@ -49,11 +51,7 @@ class Meili:
         await wait_for_task(
             client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
         )
-        tasks = []
-        count = 0
-        async for items in data:
-            count += len(items)
-            tasks.extend(await self.add_full_data(index_name_tmp, pk, items))
+        tasks, count = await self.add_full_data(index_name_tmp, pk, data)
         wait_tasks = [
             wait_for_task(
                 client=self.client, task_id=item.task_uid, timeout_in_ms=self.wait_for_task_timeout
