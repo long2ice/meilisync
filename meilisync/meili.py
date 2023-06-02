@@ -28,10 +28,12 @@ class Meili:
         self.plugins = plugins or []
         self.wait_for_task_timeout = wait_for_task_timeout
 
-    async def add_full_data(self, index: str, pk: str, data: list):
-        return await self.client.index(index).add_documents_in_batches(
-            data, batch_size=1000, primary_key=pk
-        )
+    async def add_full_data(self, index: str, pk: str, data: AsyncGenerator):
+        tasks = []
+        async for items in data:
+            task = await self.client.index(index).add_documents(items, primary_key=pk)
+            tasks.append(task)
+        return tasks
 
     async def refresh_data(self, index: str, pk: str, data: AsyncGenerator):
         index_name_tmp = f"{index}_tmp"
