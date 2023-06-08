@@ -61,7 +61,7 @@ class Meili:
         logger.info(f"Waiting for insert tmp index {index_name_tmp} to complete...")
         await asyncio.gather(*wait_tasks)
         task = await self.client.swap_indexes([(index, index_name_tmp)])
-        logger.info("Waiting for swap index to complete...")
+        logger.info(f"Waiting for swap index {index} to complete...")
         await wait_for_task(
             client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
         )

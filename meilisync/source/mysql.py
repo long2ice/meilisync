@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 import asyncmy
@@ -8,6 +9,7 @@ from asyncmy.replication.row_events import (
     UpdateRowsEvent,
     WriteRowsEvent,
 )
+from loguru import logger
 
 from meilisync.enums import EventType, SourceType
 from meilisync.schemas import Event, ProgressEvent
@@ -69,7 +71,26 @@ class MySQL(Source):
                     "master_log_position": ret["Position"],
                 }
 
+    async def _check_process(self):
+        sql = "SELECT * FROM information_schema.PROCESSLIST WHERE COMMAND=%s AND DB=%s"
+        async with asyncmy.connect(**self.kwargs) as conn:
+            async with conn.cursor(cursor=DictCursor) as cur:
+                await cur.execute(sql, ("Binlog Dump", self.database))
+                ret = await cur.fetchone()
+                if not ret and self.conn:
+                    logger.warning("Binlog Dump process not found, restart it...")
+                    await self.conn.close()
+
+    async def _start_check_process(self):
+        while True:
+            await asyncio.sleep(60)
+            try:
+                await self._check_process()
+            except Exception as e:
+                logger.error(f"Check process error: {e}")
+
     async def __aiter__(self):
+        asyncio.ensure_future(self._start_check_process())
         self.conn = await asyncmy.connect(**self.kwargs)
         self.ctl_conn = await asyncmy.connect(**self.kwargs)
         if self.progress:
