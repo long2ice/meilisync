@@ -74,7 +74,7 @@ class MySQL(Source):
     async def _check_process(self):
         sql = "SELECT * FROM information_schema.PROCESSLIST WHERE COMMAND=%s AND DB=%s"
         async with asyncmy.connect(**self.kwargs) as conn:
-            async with conn.cursor(cursor=DictCursor) as cur:
+            async with conn.cursor() as cur:
                 await cur.execute(sql, ("Binlog Dump", self.database))
                 ret = await cur.fetchone()
                 if not ret and self.conn:
@@ -87,7 +87,7 @@ class MySQL(Source):
             try:
                 await self._check_process()
             except Exception as e:
-                logger.error(f"Check process error: {e}")
+                logger.exception(e)
 
     async def __aiter__(self):
         asyncio.ensure_future(self._start_check_process())
