@@ -135,8 +135,8 @@ class MySQL(Source):
                 table=event.table,
                 data=data,
                 progress=dict(
-                    master_log_file=stream._master_log_file,
-                    master_log_position=stream._master_log_position,
+                    master_log_file=self.stream._master_log_file,
+                    master_log_position=self.stream._master_log_position,
                 ),
             )
 
