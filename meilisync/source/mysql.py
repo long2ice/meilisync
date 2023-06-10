@@ -77,9 +77,9 @@ class MySQL(Source):
             async with conn.cursor() as cur:
                 await cur.execute(sql, ("Binlog Dump", self.database))
                 ret = await cur.fetchone()
-                if not ret and self.conn:
+                if not ret:
                     logger.warning("Binlog Dump process not found, restart it...")
-                    await self.conn.ensure_closed()
+                    await self.stream.close()
 
     async def _start_check_process(self):
         while True:
@@ -106,7 +106,7 @@ class MySQL(Source):
                 "master_log_position": master_log_position,
             }
         )
-        stream = BinLogStream(
+        self.stream = BinLogStream(
             self.conn,
             self.ctl_conn,
             server_id=self.server_id,
@@ -118,7 +118,7 @@ class MySQL(Source):
             only_tables=[f"{self.database}.{table}" for table in self.tables],
             only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent],
         )
-        async for event in stream:
+        async for event in self.stream:
             if isinstance(event, WriteRowsEvent):
                 event_type = EventType.create
                 data = event.rows[0]["values"]
