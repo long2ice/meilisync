@@ -78,7 +78,9 @@ class MySQL(Source):
                 await cur.execute(sql, ("Binlog Dump", self.database))
                 ret = await cur.fetchone()
                 if not ret:
-                    logger.warning("Binlog Dump process not found, restart it...")
+                    logger.warning(
+                        f"Binlog Dump process not found for {self.database}, close it..."
+                    )
                     await self.stream.close()
 
     async def _start_check_process(self):

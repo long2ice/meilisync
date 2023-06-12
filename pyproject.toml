@@ -8,12 +8,12 @@ license = "Apache-2.0"
 name = "meilisync"
 packages = [{ include = "meilisync" }]
 readme = "README.md"
-repository = "https://github.com/meilisync/meilisync.git"
+repository = "https://github.com/long2ice/meilisync.git"
 version = "0.1.2"
 
 [tool.poetry.dependencies]
 aiofiles = "*"
-asyncmy = { version = "^0.2.8", optional = true }
+asyncmy = { git = "https://github.com/long2ice/asyncmy.git", optional = true }
 loguru = "*"
 meilisearch-python-async = "*"
 motor = { version = "*", optional = true }
