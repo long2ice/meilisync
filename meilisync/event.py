@@ -5,7 +5,6 @@ from meilisync.settings import Sync
 
 class EventCollection:
     def __init__(self):
-        self._size = 0
         self._events = {}
 
     def add_event(self, sync: Sync, event: Event):
@@ -15,7 +14,7 @@ class EventCollection:
 
     @property
     def size(self):
-        return self._size
+        return sum([len(events) for events in self._events.values()])
 
     @property
     def pop_events(self):
@@ -34,5 +33,4 @@ class EventCollection:
                 elif event.type == EventType.delete:
                     deleted_events[sync].append(event)
         self._events = {}
-        self._size = 0
         return created_events, updated_events, deleted_events
