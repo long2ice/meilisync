@@ -3,6 +3,7 @@ from typing import List
 
 import asyncmy
 from asyncmy.cursors import DictCursor
+from asyncmy.errors import OperationalError
 from asyncmy.replication import BinLogStream
 from asyncmy.replication.row_events import (
     DeleteRowsEvent,
@@ -91,56 +92,56 @@ class MySQL(Source):
             except Exception as e:
                 logger.exception(e)
 
-    async def __aiter__(self):
-        asyncio.ensure_future(self._start_check_process())
-        self.conn = await asyncmy.connect(**self.kwargs)
-        self.ctl_conn = await asyncmy.connect(**self.kwargs)
-        if self.progress:
-            master_log_file = self.progress["master_log_file"]
-            master_log_position = int(self.progress["master_log_position"])
-        else:
-            progress = await self.get_current_progress()
-            master_log_file = progress["master_log_file"]
-            master_log_position = int(progress["master_log_position"])
-        yield ProgressEvent(
-            progress={
-                "master_log_file": master_log_file,
-                "master_log_position": master_log_position,
-            }
-        )
+    def _create_stream(self):
         self.stream = BinLogStream(
             self.conn,
             self.ctl_conn,
             server_id=self.server_id,
-            master_log_file=master_log_file,
-            master_log_position=master_log_position,
+            master_log_file=self.progress["master_log_file"],
+            master_log_position=int(self.progress["master_log_position"]),
             resume_stream=True,
             blocking=True,
             only_schemas=[self.database],
             only_tables=[f"{self.database}.{table}" for table in self.tables],
             only_events=[WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent],
         )
-        async for event in self.stream:
-            if isinstance(event, WriteRowsEvent):
-                event_type = EventType.create
-                data = event.rows[0]["values"]
-            elif isinstance(event, UpdateRowsEvent):
-                event_type = EventType.update
-                data = event.rows[0]["after_values"]
-            elif isinstance(event, DeleteRowsEvent):
-                event_type = EventType.delete
-                data = event.rows[0]["values"]
-            else:
-                continue
-            yield Event(
-                type=event_type,
-                table=event.table,
-                data=data,
-                progress=dict(
-                    master_log_file=self.stream._master_log_file,
-                    master_log_position=self.stream._master_log_position,
-                ),
-            )
+
+    async def __aiter__(self):
+        asyncio.ensure_future(self._start_check_process())
+        self.conn = await asyncmy.connect(**self.kwargs)
+        self.ctl_conn = await asyncmy.connect(**self.kwargs)
+        if not self.progress:
+            self.progress = await self.get_current_progress()
+        yield ProgressEvent(
+            progress=self.progress,
+        )
+        self._create_stream()
+        while True:
+            try:
+                async for event in self.stream:
+                    if isinstance(event, WriteRowsEvent):
+                        event_type = EventType.create
+                        data = event.rows[0]["values"]
+                    elif isinstance(event, UpdateRowsEvent):
+                        event_type = EventType.update
+                        data = event.rows[0]["after_values"]
+                    elif isinstance(event, DeleteRowsEvent):
+                        event_type = EventType.delete
+                        data = event.rows[0]["values"]
+                    else:
+                        continue
+                    yield Event(
+                        type=event_type,
+                        table=event.table,
+                        data=data,
+                        progress=dict(
+                            master_log_file=self.stream._master_log_file,
+                            master_log_position=self.stream._master_log_position,
+                        ),
+                    )
+            except OperationalError as e:
+                logger.exception(f"Binlog stream error: {e}, restart...")
+                self._create_stream()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.conn.close()
