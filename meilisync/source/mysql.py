@@ -1,4 +1,3 @@
-import asyncio
 from typing import List
 
 import asyncmy
@@ -72,27 +71,8 @@ class MySQL(Source):
                     "master_log_position": ret["Position"],
                 }
 
-    async def _check_process(self):
-        sql = "SELECT * FROM information_schema.PROCESSLIST WHERE COMMAND=%s AND DB=%s"
-        async with asyncmy.connect(**self.kwargs) as conn:
-            async with conn.cursor() as cur:
-                await cur.execute(sql, ("Binlog Dump", self.database))
-                ret = await cur.fetchone()
-                if not ret:
-                    logger.warning(
-                        f"Binlog Dump process not found for {self.database}, close it..."
-                    )
-                    await self.stream.close()
-
-    async def _start_check_process(self):
-        while True:
-            await asyncio.sleep(60)
-            try:
-                await self._check_process()
-            except Exception as e:
-                logger.exception(e)
-
-    def _create_stream(self):
+    async def _create_stream(self):
+        await self.ctl_conn.connect()
         self.stream = BinLogStream(
             self.conn,
             self.ctl_conn,
@@ -107,7 +87,6 @@ class MySQL(Source):
         )
 
     async def __aiter__(self):
-        asyncio.ensure_future(self._start_check_process())
         self.conn = await asyncmy.connect(**self.kwargs)
         self.ctl_conn = await asyncmy.connect(**self.kwargs)
         if not self.progress:
@@ -115,7 +94,7 @@ class MySQL(Source):
         yield ProgressEvent(
             progress=self.progress,
         )
-        self._create_stream()
+        await self._create_stream()
         while True:
             try:
                 async for event in self.stream:
@@ -130,18 +109,17 @@ class MySQL(Source):
                         data = event.rows[0]["values"]
                     else:
                         continue
+                    self.progress["master_log_file"] = self.stream._master_log_file
+                    self.progress["master_log_position"] = self.stream._master_log_position
                     yield Event(
                         type=event_type,
                         table=event.table,
                         data=data,
-                        progress=dict(
-                            master_log_file=self.stream._master_log_file,
-                            master_log_position=self.stream._master_log_position,
-                        ),
+                        progress=self.progress,
                     )
             except OperationalError as e:
                 logger.exception(f"Binlog stream error: {e}, restart...")
-                self._create_stream()
+                await self._create_stream()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.conn.close()
