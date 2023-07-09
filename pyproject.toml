@@ -23,6 +23,7 @@ pyyaml = "*"
 redis = "*"
 sentry-sdk = "*"
 typer = { version = "*", extras = ["all"] }
+pydantic-settings = "*"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"

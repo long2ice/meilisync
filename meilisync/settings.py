@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, BaseSettings, Extra
+from pydantic import BaseModel, Extra
+from pydantic_settings import BaseSettings
 
 from meilisync.enums import ProgressType, SourceType
 from meilisync.plugin import load_plugin
@@ -22,7 +23,7 @@ class MeiliSearch(BaseModel):
 
 
 class BasePlugin(BaseModel):
-    plugins: Optional[List[str]]
+    plugins: Optional[List[str]] = []
 
     def plugins_cls(self):
         plugins = []
