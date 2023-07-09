@@ -10,6 +10,8 @@
 
 Realtime sync data from MySQL/PostgreSQL/MongoDB to Meilisearch.
 
+There is also a web admin dashboard for meilisync: [meilisync-admin](https://github.com/long2ice/meilisync-admin).
+
 ## Install
 
 Just install from pypi:
@@ -213,30 +215,6 @@ Sentry configuration.
 
 - `dsn`: the sentry dsn.
 - `environment`: the sentry environment, default is `production`.
-
-## meilisync-admin (under development)
-
-There is a web admin dashboard for meilisync, which is a paid feature, you can contact me by
-email [long2ice@gmail.com](mailto:long2ice@gmail.com) if you are interested.
-
-Check the demo at: https://demo.meilisync.com
-
-- **email**: `demo@meilisync.com`
-- **password**: `demo`
-
-### Screenshot
-
-![meilisync-admin](./images/meilisync-admin.png)
-
-### Features
-
-- Support multiple source and meilisearch instances.
-- Support Sync task management.
-- Admin management and access control.
-- Action logs audit.
-- i18n support.
-- Feature request and technical support.
-- More features coming soon.
 
 ## License
 
