@@ -67,7 +67,7 @@ develop = false
 type = "git"
 url = "https://github.com/long2ice/asyncmy.git"
 reference = "HEAD"
-resolved_reference = "8a4be19811c9f508523edf4751d3f19716fb533e"
+resolved_reference = "70ecaf4a18db65d835a545f66e2671ed3f13e0dd"
 
 [[package]]
 name = "black"
