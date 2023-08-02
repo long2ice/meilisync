@@ -26,6 +26,7 @@ class Mongo(Source):
         cursor = collection.find({}, fields)
         ret = []
         async for doc in cursor:
+            doc["_id"] = str(doc["_id"])
             ret.append(doc)
             if len(ret) == size:
                 yield ret
@@ -43,8 +44,7 @@ class Mongo(Source):
     async def get_current_progress(self):
         pipeline = [{"$match": {"operationType": {"$in": ["insert", "update", "delete"]}}}]
         async with self.db.watch(pipeline) as stream:
-            async for _ in stream:
-                return {"resume_token": stream.resume_token}
+            return {"resume_token": stream.resume_token}
 
     async def __aiter__(self):
         pipeline = [{"$match": {"operationType": {"$in": ["insert", "update", "delete"]}}}]
