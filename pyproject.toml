@@ -15,7 +15,7 @@ version = "0.1.2"
 aiofiles = "*"
 asyncmy = { git = "https://github.com/long2ice/asyncmy.git", optional = true }
 loguru = "*"
-meilisearch-python-async = "*"
+meilisearch-python-sdk = "*"
 motor = { version = "*", optional = true }
 psycopg2-binary = { version = "*", optional = true }
 python = "^3.9"

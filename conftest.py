@@ -1,5 +1,5 @@
-from meilisearch_python_async import Client
+from meilisearch_python_sdk import AsyncClient
 
-client = Client(
+client = AsyncClient(
     "http://localhost:7700",
 )

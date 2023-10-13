@@ -2,9 +2,8 @@ import asyncio
 from typing import AsyncGenerator, List, Optional, Type, Union
 
 from loguru import logger
-from meilisearch_python_async import Client
-from meilisearch_python_async.errors import MeilisearchApiError
-from meilisearch_python_async.task import wait_for_task
+from meilisearch_python_sdk import AsyncClient
+from meilisearch_python_sdk.errors import MeilisearchApiError
 
 from meilisync.enums import EventType
 from meilisync.event import EventCollection
@@ -21,7 +20,7 @@ class Meili:
         plugins: Optional[List[Union[Type[Plugin], Plugin]]] = None,
         wait_for_task_timeout: Optional[int] = None,
     ):
-        self.client = Client(
+        self.client = AsyncClient(
             api_url,
             api_key,
         )
@@ -48,13 +47,13 @@ class Meili:
         index_tmp = await self.client.create_index(index_name_tmp, primary_key=pk)
         task = await index_tmp.update_settings(settings)
         logger.info(f"Waiting for update tmp index {index_name_tmp} settings to complete...")
-        await wait_for_task(
-            client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
+        await self.client.wait_for_task(
+            task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
         )
         tasks, count = await self.add_full_data(index_name_tmp, pk, data)
         wait_tasks = [
-            wait_for_task(
-                client=self.client, task_id=item.task_uid, timeout_in_ms=self.wait_for_task_timeout
+            self.client.wait_for_task(
+                task_id=item.task_uid, timeout_in_ms=self.wait_for_task_timeout
             )
             for item in tasks
         ]
@@ -62,8 +61,8 @@ class Meili:
         await asyncio.gather(*wait_tasks)
         task = await self.client.swap_indexes([(index, index_name_tmp)])
         logger.info(f"Waiting for swap index {index} to complete...")
-        await wait_for_task(
-            client=self.client, task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
+        await self.client.wait_for_task(
+            task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
         )
         await self.client.index(index_name_tmp).delete()
         logger.success(f"Swap index {index} complete")
