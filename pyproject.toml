@@ -3,7 +3,7 @@ authors = ["long2ice <long2ice@gmail.com>"]
 description = "Realtime sync data from MySQL/PostgreSQL/MongoDB to meilisearch"
 documentation = "https://github.com/meilisync/meilisync"
 include = ["CHANGELOG.md", "LICENSE", "README.md"]
-keywords = ["meilisearch", "postgres", "mysql"]
+keywords = ["meilisearch", "postgres", "mysql", "mongodb", "sync"]
 license = "Apache-2.0"
 name = "meilisync"
 packages = [{ include = "meilisync" }]
@@ -57,7 +57,7 @@ profile = "black"
 
 [tool.black]
 line-length = 100
-target-version = ['py36', 'py37', 'py38', 'py39']
+target-version = ['py38', 'py39', 'py310', 'py311']
 
 [tool.pytest.ini_options]
 asyncio_mode = 'auto'
