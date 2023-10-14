@@ -64,6 +64,7 @@ class Mongo(Source):
                     data = change["updateDescription"]["updatedFields"]
                 elif operation_type == "delete":
                     event_type = EventType.delete
+                    data = change["documentKey"]
                 data["_id"] = str(change["documentKey"]["_id"])
                 yield Event(
                     type=event_type,
