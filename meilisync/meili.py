@@ -27,17 +27,20 @@ class Meili:
         self.plugins = plugins or []
         self.wait_for_task_timeout = wait_for_task_timeout
 
-    async def add_full_data(self, index: str, pk: str, data: AsyncGenerator):
+    async def add_full_data(self, sync: Sync, data: AsyncGenerator):
         tasks = []
         count = 0
         async for items in data:
             count += len(items)
-            task = await self.client.index(index).add_documents(items, primary_key=pk)
+            events = [Event(type=EventType.create, data=item) for item in items]
+            task = await self.handle_events_by_type(sync, events, EventType.create)
             tasks.append(task)
         return tasks, count
 
-    async def refresh_data(self, index: str, pk: str, data: AsyncGenerator):
-        index_name_tmp = f"{index}_tmp"
+    async def refresh_data(self, sync: Sync, data: AsyncGenerator):
+        index = sync.index_name
+        pk = sync.pk
+        sync.index = index_name_tmp = f"{index}_tmp"
         try:
             await self.client.index(index_name_tmp).delete()
         except MeilisearchApiError as e:
@@ -50,7 +53,7 @@ class Meili:
         await self.client.wait_for_task(
             task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
         )
-        tasks, count = await self.add_full_data(index_name_tmp, pk, data)
+        tasks, count = await self.add_full_data(sync, data)
         wait_tasks = [
             self.client.wait_for_task(
                 task_id=item.task_uid, timeout_in_ms=self.wait_for_task_timeout
@@ -122,18 +125,20 @@ class Meili:
         index = self.client.index(sync.index_name)
         for event in events:
             await self.handle_plugins_pre(sync, event)
+        task = None
         if event_type == EventType.create:
-            await index.add_documents(
+            task = await index.add_documents(
                 [event.mapping_data(sync.fields) for event in events], primary_key=sync.pk
             )
         elif event_type == EventType.update:
-            await index.update_documents(
+            task = await index.update_documents(
                 [event.mapping_data(sync.fields) for event in events], primary_key=sync.pk
             )
         elif event_type == EventType.delete:
-            await index.delete_documents([str(event.data[sync.pk]) for event in events])
+            task = await index.delete_documents([str(event.data[sync.pk]) for event in events])
         for event in events:
             await self.handle_plugins_post(sync, event)
+        return task
 
     async def handle_event(self, event: Event, sync: Sync):
         event = await self.handle_plugins_pre(sync, event)

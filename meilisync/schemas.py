@@ -7,12 +7,12 @@ from meilisync.enums import EventType
 
 
 class ProgressEvent(BaseModel):
-    progress: dict
+    progress: dict | None = None
 
 
 class Event(ProgressEvent):
     type: EventType
-    table: str
+    table: str | None = None
     data: dict
 
     def mapping_data(self, fields_mapping: Optional[dict] = None):
