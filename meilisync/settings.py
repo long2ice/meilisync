@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from pydantic import BaseModel, Extra
 from pydantic_settings import BaseSettings
@@ -17,13 +17,13 @@ class Source(BaseModel):
 
 class MeiliSearch(BaseModel):
     api_url: str
-    api_key: Optional[str]
-    insert_size: Optional[int]
-    insert_interval: Optional[int]
+    api_key: str | None = None
+    insert_size: int | None = None
+    insert_interval: int | None = None
 
 
 class BasePlugin(BaseModel):
-    plugins: Optional[List[str]] = []
+    plugins: List[str] = []
 
     def plugins_cls(self):
         plugins = []
@@ -40,8 +40,8 @@ class Sync(BasePlugin):
     table: str
     pk: str = "id"
     full: bool = False
-    index: Optional[str]
-    fields: Optional[dict]
+    index: str | None = None
+    fields: dict | None = None
 
     @property
     def index_name(self):
@@ -69,7 +69,7 @@ class Settings(BaseSettings, BasePlugin):
     source: Source
     meilisearch: MeiliSearch
     sync: List[Sync]
-    sentry: Optional[Sentry]
+    sentry: Sentry | None = None
 
     @property
     def tables(self):
