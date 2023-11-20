@@ -29,12 +29,10 @@ class Meili:
 
     async def add_full_data(self, sync: Sync, data: AsyncGenerator):
         tasks = []
-        count = 0
-        async for items in data:
-            count += len(items)
-            events = [Event(type=EventType.create, data=item) for item in items]
-            task = await self.handle_events_by_type(sync, events, EventType.create)
-            tasks.append(task)
+        count = len(data)
+        events = [Event(type=EventType.create, data=item) for item in data]
+        task = await self.handle_events_by_type(sync, events, EventType.create)
+        tasks.append(task)
         return tasks, count
 
     async def refresh_data(self, sync: Sync, data: AsyncGenerator):
