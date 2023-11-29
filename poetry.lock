@@ -58,16 +58,67 @@ files = [
 name = "asyncmy"
 version = "0.2.9"
 description = "A fast asyncio MySQL driver"
-optional = true
-python-versions = "^3.7"
-files = []
-develop = false
-
-[package.source]
-type = "git"
-url = "https://github.com/long2ice/asyncmy.git"
-reference = "HEAD"
-resolved_reference = "044a4b0dee6dde6c7b828e11fd5a92bca4b75c52"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "asyncmy-0.2.9-cp310-cp310-macosx_12_0_x86_64.whl", hash = "sha256:d077eaee9a126f36bbe95e0412baa89e93172dd46193ef7bf7650a686e458e50"},
+    {file = "asyncmy-0.2.9-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:83cf951a44294626df43c5a85cf328297c3bac63f25ede216f9706514dabb322"},
+    {file = "asyncmy-0.2.9-cp310-cp310-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:8a1d63c1bb8e3a09c90767199954fd423c48084a1f6c0d956217bc2e48d37d6d"},
+    {file = "asyncmy-0.2.9-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4ecad6826086e47596c6aa65dcbe221305f3d9232f0d4de11b8562ee2c55464a"},
+    {file = "asyncmy-0.2.9-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:4a664d58f9ebe4132f6cb3128206392be8ad71ad6fb09a5f4a990b04ec142024"},
+    {file = "asyncmy-0.2.9-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:f2bbd7b75e2d751216f48c3b1b5092b812d70c2cd0053f8d2f50ec3f76a525a8"},
+    {file = "asyncmy-0.2.9-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:55e3bc41aa0d4ab410fc3a1d0c31b9cdb6688cd3b0cae6f2ee49c2e7f42968be"},
+    {file = "asyncmy-0.2.9-cp310-cp310-win32.whl", hash = "sha256:ea44eefc965c62bcfebf34e9ef00f6e807edf51046046767c56914243e0737e4"},
+    {file = "asyncmy-0.2.9-cp310-cp310-win_amd64.whl", hash = "sha256:2b4a2a7cf0bd5051931756e765fefef3c9f9561550e0dd8b1e79308d048b710a"},
+    {file = "asyncmy-0.2.9-cp311-cp311-macosx_12_0_x86_64.whl", hash = "sha256:e2b77f03a17a8db338d74311e38ca6dbd4ff9aacb07d2af6b9e0cac9cf1c7b87"},
+    {file = "asyncmy-0.2.9-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c19f27b7ff0e297f2981335a85599ffe1c9a8a35c97230203321d5d6e9e4cb30"},
+    {file = "asyncmy-0.2.9-cp311-cp311-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:bf18aef65ac98f5130ca588c55a83a56e74ae416cf0fe2c0757a2b597c4269d0"},
+    {file = "asyncmy-0.2.9-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1ef02186cc02cb767ee5d5cf9ab002d5c7910a1a9f4c16a666867a9325c9ec5e"},
+    {file = "asyncmy-0.2.9-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:696da0f71db0fe11e62fa58cd5a27d7c9d9a90699d13d82640755d0061da0624"},
+    {file = "asyncmy-0.2.9-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:84d20745bb187ced05bd4072ae8b0bff4b4622efa23b79935519edb717174584"},
+    {file = "asyncmy-0.2.9-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:ea242364523f6205c4426435272bd57cbf593c20d5e5551efb28d44cfbd595c2"},
+    {file = "asyncmy-0.2.9-cp311-cp311-win32.whl", hash = "sha256:47609d34e6b49fc5ad5bd2a2a593ca120e143e2a4f4206f27a543c5c598a18ca"},
+    {file = "asyncmy-0.2.9-cp311-cp311-win_amd64.whl", hash = "sha256:0d56df7342f7b5467a9d09a854f0e5602c8da09afdad8181ba40b0434d66d8a4"},
+    {file = "asyncmy-0.2.9-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:63c2a98f225560f9a52d5bd0d2e58517639e209e5d996e9ab7470e661b39394d"},
+    {file = "asyncmy-0.2.9-cp37-cp37m-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:20ae3acc326b4b104949cc5e3a728a927e671f671c6f26266ad4a44f57ea9a5b"},
+    {file = "asyncmy-0.2.9-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8171a64888453423a17ae507cd97d256541ea880b314bba16376ab9deffef6e8"},
+    {file = "asyncmy-0.2.9-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:c966de493928f26218e0bfaa284cfa609540e52841c423d7babf9ca97c9ff820"},
+    {file = "asyncmy-0.2.9-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:4321c4cb4c691689aa26a56354e3fa723d89dc2cac82751e8671b2a4e6441778"},
+    {file = "asyncmy-0.2.9-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:cd7cde6759dbbfcc467c2af4ef3d75de0b756dde39a3d176383d8c6d9f8a34f3"},
+    {file = "asyncmy-0.2.9-cp37-cp37m-win32.whl", hash = "sha256:7678d3641d5a19f20e7e19220c83405fe8616a3b437efbc494f34ad186cedcf0"},
+    {file = "asyncmy-0.2.9-cp37-cp37m-win_amd64.whl", hash = "sha256:e8f48d09adf3426e7a59066eaae3c7c84c318ec56cc2f20732d652056c7a3f62"},
+    {file = "asyncmy-0.2.9-cp38-cp38-macosx_12_0_x86_64.whl", hash = "sha256:4c4f1dc0acbaac8c3f046215031bbf3ca3d2cd7716244365325496e4f6222b78"},
+    {file = "asyncmy-0.2.9-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:901aac048e5342acc62e1f68f6dec5aa3ed272cb2b138dca38d1c74fc414285d"},
+    {file = "asyncmy-0.2.9-cp38-cp38-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:c2d4ad8817f99d9734912c2ff91c42e419031441f512b4aecd7e40a167908c1c"},
+    {file = "asyncmy-0.2.9-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:544d3736fd6682f0201a123e4f49335420b6abf6c245abe0487f5967021f1436"},
+    {file = "asyncmy-0.2.9-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:f0c606a55625146e189534cc39038540f7a8f2c680ea82845c1f4315a9ad2914"},
+    {file = "asyncmy-0.2.9-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:625f96371d64769b94f7f7f699cfa5be56e669828aef3698cbf4f5bb0014ccb3"},
+    {file = "asyncmy-0.2.9-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:eeeb53fdd54eef54b9793a7a5c849c5f7a2fb2540a637f21585a996ef9dd8845"},
+    {file = "asyncmy-0.2.9-cp38-cp38-win32.whl", hash = "sha256:2136b749ac489c25ab3aab4a81ae6e9dfb18fd0a5ebda96cd72788c5e4d46927"},
+    {file = "asyncmy-0.2.9-cp38-cp38-win_amd64.whl", hash = "sha256:d08fb8722150a9c0645665cf777916335687bddb5f37a8e02af772e330be777b"},
+    {file = "asyncmy-0.2.9-cp39-cp39-macosx_12_0_x86_64.whl", hash = "sha256:dbee276a9c8750b522aaad86315a6ed1ffbcb9145ce89070db77831c00dd2da1"},
+    {file = "asyncmy-0.2.9-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a8755248429f9bd3d7768c71494c9943fced18f9f526f768e96f5b9b3c727c84"},
+    {file = "asyncmy-0.2.9-cp39-cp39-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:64bcd5110dca7a96cb411de85ab8f79fa867e864150939b8e76286a66eab28fc"},
+    {file = "asyncmy-0.2.9-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2a83e3895bed6d44aa334deb1c343d4ffc64b0def2215149f8df2e0e13499250"},
+    {file = "asyncmy-0.2.9-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:beb3d0e434ce0bd9e609cf5341c3b82433ef544f89055d3792186e11fa2433d9"},
+    {file = "asyncmy-0.2.9-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:dc608ff331c5d1065e2d3566493d2d9e17f36e315bd5fad3c91c421eea306edb"},
+    {file = "asyncmy-0.2.9-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:02caedc00035b2bd0be5555ef61d83ee9cb356ab488ac40072630ba224af02b0"},
+    {file = "asyncmy-0.2.9-cp39-cp39-win32.whl", hash = "sha256:5b944d9cdf7ce25b396cd1e0c9319ba24c6583bde7a5dd31157614f3b9cc5b2f"},
+    {file = "asyncmy-0.2.9-cp39-cp39-win_amd64.whl", hash = "sha256:3ceb59b9307b5eb893f4d473fcbc43ac0321ffb0436e0115b20cc2e0baa44eb5"},
+    {file = "asyncmy-0.2.9-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e9f1ca623517552a637900b90d65b5bafc9c67bebf96e3427eecb9359ffa24b1"},
+    {file = "asyncmy-0.2.9-pp37-pypy37_pp73-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:49622dc4ec69b5a4cbddb3695a1e9249b31092c6f19604abb664b43dcb509b6f"},
+    {file = "asyncmy-0.2.9-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux1_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b8412e825443ee876ef0d55ac4356b56173f5cb64ca8e4638974f8cf5c912a63"},
+    {file = "asyncmy-0.2.9-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:4025db2a27b1d84d3c68b5d5aacecac17258b69f25ec8a8c350c5f666003a778"},
+    {file = "asyncmy-0.2.9-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:da7640f3357849b176364ed546908e28c8460701ddc0d23cc3fa7113ec52a076"},
+    {file = "asyncmy-0.2.9-pp38-pypy38_pp73-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:d2593717fa7a92a7d361444726292ce34edea76d5aa67d469b5efeee1c9b729e"},
+    {file = "asyncmy-0.2.9-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux1_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e9f22e13bd77277593b56de2e4b65c40c2e81b1a42c4845d062403c5c5bc52bc"},
+    {file = "asyncmy-0.2.9-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:a4aa17cc6ac0f7bc6b72e08d112566e69a36e2e1ebebad43d699757b7b4ff028"},
+    {file = "asyncmy-0.2.9-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e7e6f5205722e67c910510e294ad483bdafa7e29d5cf455d49ffa4b819e55fd8"},
+    {file = "asyncmy-0.2.9-pp39-pypy39_pp73-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:1021796f1910a0c2ab2d878f8f5d56f939ef0681f9c1fe925b78161cad2f8297"},
+    {file = "asyncmy-0.2.9-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux1_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1b1dd463bb054138bd1fd3fec9911eb618e92f54f61abb476658f863340394d1"},
+    {file = "asyncmy-0.2.9-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:ad06f3c02d455947e95087d29f7122411208f0eadaf8671772fe5bad97d9873a"},
+    {file = "asyncmy-0.2.9.tar.gz", hash = "sha256:da188be013291d1f831d63cdd3614567f4c63bfdcde73631ddff8df00c56d614"},
+]
 
 [[package]]
 name = "black"
@@ -1374,4 +1425,4 @@ sentry = ["sentry-sdk"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "aa1c15ceec05406966b1a12890a0b221c037e72f168693c3caa4e5550ff86f41"
+content-hash = "5feac40bb927d090b8946b17c5252d26698da3efe6fd22a1f6910a492878ebf5"

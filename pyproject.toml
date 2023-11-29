@@ -13,7 +13,7 @@ version = "0.1.2"
 
 [tool.poetry.dependencies]
 aiofiles = "*"
-asyncmy = { git = "https://github.com/long2ice/asyncmy.git", optional = true }
+asyncmy = "^0.2.9"
 loguru = "*"
 meilisearch-python-sdk = "*"
 motor = { version = "*", optional = true }

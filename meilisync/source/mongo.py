@@ -14,7 +14,7 @@ class Mongo(Source):
     def __init__(self, progress: dict, tables: List[str], **kwargs):
         super().__init__(progress, tables, **kwargs)
         database = self.kwargs.pop("database")
-        self.client = motor.motor_asyncio.AsyncIOMotorClient(**self.kwargs)
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(**self.kwargs)  # type: ignore
         self.db = self.client[database]
 
     async def get_full_data(self, sync: Sync, size: int):

@@ -153,7 +153,7 @@ def refresh(
     async def _():
         settings = context.obj["settings"]
         source = context.obj["source"]
-        meili = context.obj["meili"]  # type: Meili
+        meili = context.obj["meili"]
         progress = context.obj["progress"]
         for sync in settings.sync:
             if not table or sync.table in table:
