@@ -83,7 +83,10 @@ class Postgres(Source):
             columnvalues = change.get("columnvalues")
             
             if kind == "update":
-                                values = (
+                values = dict(zip(columnnames, columnvalues))
+                event_type = EventType.update
+            elif kind == "delete":
+                values = (
                     dict(zip(columnnames, columnvalues))
                     if columnvalues
                     else {
@@ -92,9 +95,6 @@ class Postgres(Source):
                         ][0]
                     }
                 )
-                event_type = EventType.update
-            elif kind == "delete":
-                values = dict(zip(columnnames, columnvalues))
                 event_type = EventType.delete
             elif kind == "insert":
                 values = dict(zip(columnnames, columnvalues))
