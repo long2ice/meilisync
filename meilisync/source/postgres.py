@@ -46,7 +46,8 @@ class Postgres(Source):
                 ret = cur.fetchone()
                 return ret[0]
 
-        return await asyncio.get_event_loop().run_in_executor(None, _)
+        start_lsn = await asyncio.get_event_loop().run_in_executor(None, _)
+        return {"start_lsn": start_lsn}
 
     async def get_full_data(self, sync: Sync, size: int):
         def _():
