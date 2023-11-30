@@ -50,25 +50,26 @@ class Postgres(Source):
         return {"start_lsn": start_lsn}
 
     async def get_full_data(self, sync: Sync, size: int):
+        if sync.fields:
+            fields = ", ".join(f"{field} as {sync.fields[field] or field}" for field in sync.fields)
+        else:
+            fields = "*"
+        offset = 0
+
         def _():
             with self.conn_dict.cursor() as cur:
-                if sync.fields:
-                    fields = ", ".join(f"{field} as {sync.fields[field]}" for field in sync.fields)
-                else:
-                    fields = "*"
-                while True:
-                    offset = 0
-                    cur.execute(
-                        f"SELECT {fields} FROM {sync.table} ORDER BY "
-                        f"{sync.pk} LIMIT {size} OFFSET {offset}"
-                    )
-                    ret = cur.fetchall()
-                    if not ret:
-                        break
-                    offset += size
-                    yield ret
+                cur.execute(
+                    f"SELECT {fields} FROM {sync.table} ORDER BY "
+                    f"{sync.pk} LIMIT {size} OFFSET {offset}"
+                )
+                return cur.fetchall()
 
-        return await asyncio.get_event_loop().run_in_executor(None, _)
+        while True:
+            ret = await asyncio.get_event_loop().run_in_executor(None, _)
+            if not ret:
+                break
+            offset += size
+            yield ret
 
     def _consumer(self, msg: ReplicationMessage):
         payload = json.loads(msg.payload)
