@@ -121,9 +121,12 @@ class MySQL(Source):
             except OperationalError as e:
                 logger.exception(f"Binlog stream error: {e}, sleep 10s and retry...")
                 await asyncio.sleep(10)
-                await self.stream.close()
-                self.ctl_conn.close()
-                await self._create_stream()
+                try:
+                    await self.stream.close()
+                    self.ctl_conn.close()
+                    await self._create_stream()
+                except Exception as e:
+                    logger.exception(f"Recreate binlog stream error: {e}")
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.conn.close()
