@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 import asyncmy
@@ -64,7 +65,7 @@ class MySQL(Source):
     async def get_current_progress(self):
         async with asyncmy.connect(**self.kwargs) as conn:
             async with conn.cursor(cursor=DictCursor) as cur:
-                await cur.execute("SHOW MASTER STATUS")
+                await cur.execute("SHOW BINARY LOG STATUS")
                 ret = await cur.fetchone()
                 return {
                     "master_log_file": ret["File"],
@@ -118,7 +119,8 @@ class MySQL(Source):
                         progress=self.progress,
                     )
             except OperationalError as e:
-                logger.exception(f"Binlog stream error: {e}, restart...")
+                logger.exception(f"Binlog stream error: {e}, sleep 10s and retry...")
+                await asyncio.sleep(10)
                 await self._create_stream()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
