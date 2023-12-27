@@ -122,7 +122,7 @@ class MySQL(Source):
                 logger.exception(f"Binlog stream error: {e}, sleep 10s and retry...")
                 await asyncio.sleep(10)
                 await self.stream.close()
-                await self.ctl_conn.close()
+                self.ctl_conn.close()
                 await self._create_stream()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
