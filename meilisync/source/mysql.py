@@ -65,7 +65,13 @@ class MySQL(Source):
     async def get_current_progress(self):
         async with asyncmy.connect(**self.kwargs) as conn:
             async with conn.cursor(cursor=DictCursor) as cur:
-                await cur.execute("SHOW BINARY LOG STATUS")
+                await cur.execute("SELECT VERSION()")
+                ret = await cur.fetchone()
+                version = ret["VERSION()"]
+                if version >= "8.2.0":
+                    await cur.execute("SHOW BINARY LOG STATUS")
+                else:
+                    await cur.execute("SHOW MASTER STATUS")
                 ret = await cur.fetchone()
                 return {
                     "master_log_file": ret["File"],
