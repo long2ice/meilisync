@@ -27,15 +27,9 @@ class Meili:
         self.plugins = plugins or []
         self.wait_for_task_timeout = wait_for_task_timeout
 
-    async def add_full_data(self, sync: Sync, data: AsyncGenerator):
-        tasks = []
-        count = 0
-        async for items in data:
-            count += len(items)
-            events = [Event(type=EventType.create, data=item) for item in items]
-            task = await self.handle_events_by_type(sync, events, EventType.create)
-            tasks.append(task)
-        return tasks, count
+    async def add_data(self, sync: Sync, data: list):
+        events = [Event(type=EventType.create, data=item) for item in data]
+        return await self.handle_events_by_type(sync, events, EventType.create)
 
     async def refresh_data(self, sync: Sync, data: AsyncGenerator):
         index = sync.index_name
@@ -53,7 +47,12 @@ class Meili:
         await self.client.wait_for_task(
             task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
         )
-        tasks, count = await self.add_full_data(sync, data)
+        tasks = []
+        count = 0
+        async for items in data:
+            task = await self.add_data(sync, items)
+            tasks.append(task)
+            count += len(items)
         wait_tasks = [
             self.client.wait_for_task(
                 task_id=item.task_uid, timeout_in_ms=self.wait_for_task_timeout

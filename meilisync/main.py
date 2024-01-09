@@ -88,7 +88,7 @@ def start(
                 count = 0
                 async for items in source.get_full_data(sync, meili_settings.insert_size or 10000):
                     count += len(items)
-                    await meili.add_full_data(sync, items)
+                    await meili.add_data(sync, items)
                 if count:
                     logger.info(
                         f'Full data sync for table "{settings.source.database}.{sync.table}" '
