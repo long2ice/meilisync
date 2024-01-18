@@ -17,8 +17,8 @@ async def test_sync():
     )
     cur = conn.cursor()
     cur.execute("DROP TABLE IF EXISTS test")
-    cur.execute("CREATE TABLE IF NOT EXISTS test (id INT PRIMARY KEY, age INT)")
-    cur.execute("INSERT INTO test (id, age) VALUES (%s, %s)", (1, 18))
+    cur.execute("CREATE TABLE IF NOT EXISTS test (id INT PRIMARY KEY, age INT, data_json JSON)")
+    cur.execute("INSERT INTO test (id, age, data_json) VALUES (%s, %s, %s)", (1, 18, '{"name": "test data"}'))
     conn.commit()
     time.sleep(2)
     ret = await index.get_documents()
@@ -26,5 +26,8 @@ async def test_sync():
         {
             "id": 1,
             "age": 18,
+            "data_json": {
+                "name": "test data"
+            }
         }
     ]

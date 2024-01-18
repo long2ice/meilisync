@@ -83,6 +83,11 @@ class Postgres(Source):
                 return
             columnnames = change.get("columnnames")
             columnvalues = change.get("columnvalues")
+            columntypes = change.get("columntypes")
+
+            for i in range(len(columntypes)):
+                if columntypes[i] == 'json':
+                    columnvalues[i] = json.loads(columnvalues[i])
 
             if kind == "update":
                 values = dict(zip(columnnames, columnvalues))
