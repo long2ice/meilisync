@@ -86,7 +86,7 @@ class Postgres(Source):
             columntypes = change.get("columntypes")
 
             for i in range(len(columntypes)):
-                if columntypes[i] == 'json':
+                if columntypes[i] == "json":
                     columnvalues[i] = json.loads(columnvalues[i])
 
             if kind == "update":
