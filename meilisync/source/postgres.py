@@ -14,6 +14,23 @@ from meilisync.settings import Sync
 from meilisync.source import Source
 
 
+class CustomDictRow(psycopg2.extras.RealDictRow):
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError as exc:
+            if isinstance(key, int):
+                return super().__getitem__(list(self.keys())[key])
+            raise exc
+
+
+class CustomDictCursor(psycopg2.extras.RealDictCursor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        kwargs["row_factory"] = CustomDictRow
+        self.row_factory = CustomDictRow
+
+
 class Postgres(Source):
     type = SourceType.postgres
     slot = "meilisync"
@@ -34,7 +51,7 @@ class Postgres(Source):
             self.cursor.execute("SELECT pg_current_wal_lsn()")
             self.start_lsn = self.cursor.fetchone()[0]
         self.conn_dict = psycopg2.connect(
-            **self.kwargs, cursor_factory=psycopg2.extras.RealDictCursor
+            **self.kwargs, cursor_factory=CustomDictCursor
         )
 
     async def get_current_progress(self):
@@ -81,9 +98,9 @@ class Postgres(Source):
             table = change.get("table")
             if table not in self.tables:
                 return
-            columnnames = change.get("columnnames")
-            columnvalues = change.get("columnvalues")
-            columntypes = change.get("columntypes")
+            columnnames = change.get("columnnames", [])
+            columnvalues = change.get("columnvalues", [])
+            columntypes = change.get("columntypes", [])
 
             for i in range(len(columntypes)):
                 if columntypes[i] == "json":
