@@ -50,9 +50,7 @@ class Postgres(Source):
         else:
             self.cursor.execute("SELECT pg_current_wal_lsn()")
             self.start_lsn = self.cursor.fetchone()[0]
-        self.conn_dict = psycopg2.connect(
-            **self.kwargs, cursor_factory=CustomDictCursor
-        )
+        self.conn_dict = psycopg2.connect(**self.kwargs, cursor_factory=CustomDictCursor)
 
     async def get_current_progress(self):
         sql = "SELECT pg_current_wal_lsn()"
