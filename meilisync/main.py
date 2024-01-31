@@ -150,7 +150,10 @@ def refresh(
         10000, "-s", "--size", help="Size of data for each insert to be inserted into MeiliSearch"
     ),
     keep_index: bool = typer.Option(
-        False, "-d", "--keep-index", help="Flag to delete the existing index before doing the sync"
+        False,
+        "-d",
+        "--keep-index",
+        help="Flag to avoid deleting the existing index before doing a full sync.",
     ),
 ):
     async def _():
