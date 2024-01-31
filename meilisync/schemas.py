@@ -25,6 +25,6 @@ class Event(ProgressEvent):
             if fields_mapping is not None and k in fields_mapping:
                 real_k = fields_mapping[k] or k
                 data[real_k] = v
-            else:
+            elif fields_mapping is None:
                 data[k] = v
         return data or self.data
