@@ -9,7 +9,7 @@ name = "meilisync"
 packages = [{ include = "meilisync" }]
 readme = "README.md"
 repository = "https://github.com/long2ice/meilisync.git"
-version = "0.1.2"
+version = "0.1.3"
 
 [tool.poetry.dependencies]
 aiofiles = "*"
