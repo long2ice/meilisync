@@ -28,25 +28,30 @@ class Meili:
         self.wait_for_task_timeout = wait_for_task_timeout
 
     async def add_data(self, sync: Sync, data: list):
-        events = [Event(type=EventType.create, data=item) for item in data]
+        events = [Event(type=EventType.create, data=item, table=sync.table) for item in data]
         return await self.handle_events_by_type(sync, events, EventType.create)
 
-    async def refresh_data(self, sync: Sync, data: AsyncGenerator):
+    async def refresh_data(self, sync: Sync, data: AsyncGenerator, keep_index: bool = False):
         index = sync.index_name
         pk = sync.pk
-        sync.index = index_name_tmp = f"{index}_tmp"
-        try:
-            await self.client.index(index_name_tmp).delete()
-        except MeilisearchApiError as e:
-            if e.code != "MeilisearchApiError.index_not_found":
-                raise
-        settings = await self.client.index(index).get_settings()
-        index_tmp = await self.client.create_index(index_name_tmp, primary_key=pk)
-        task = await index_tmp.update_settings(settings)
-        logger.info(f"Waiting for update tmp index {index_name_tmp} settings to complete...")
-        await self.client.wait_for_task(
-            task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
-        )
+        if not keep_index:
+            sync.index = index_name_tmp = f"{index}_tmp"
+            try:
+                await self.client.index(index_name_tmp).delete()
+            except MeilisearchApiError as e:
+                if e.code != "MeilisearchApiError.index_not_found":
+                    raise
+            settings = await self.client.index(index).get_settings()
+            index_tmp = await self.client.create_index(index_name_tmp, primary_key=pk)
+            task = await index_tmp.update_settings(settings)
+            logger.info(f"Waiting for update tmp index {index_name_tmp} settings to complete...")
+            await self.client.wait_for_task(
+                task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
+            )
+        else:
+            logger.info("Not deleting index when refreshing data")
+            index_name_tmp = index
+
         tasks = []
         count = 0
         async for items in data:
@@ -61,13 +66,16 @@ class Meili:
         ]
         logger.info(f"Waiting for insert tmp index {index_name_tmp} to complete...")
         await asyncio.gather(*wait_tasks)
-        task = await self.client.swap_indexes([(index, index_name_tmp)])
-        logger.info(f"Waiting for swap index {index} to complete...")
-        await self.client.wait_for_task(
-            task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
-        )
-        await self.client.index(index_name_tmp).delete()
-        logger.success(f"Swap index {index} complete")
+
+        if not keep_index:
+            task = await self.client.swap_indexes([(index, index_name_tmp)])
+            logger.info(f"Waiting for swap index {index} to complete...")
+            await self.client.wait_for_task(
+                task_id=task.task_uid, timeout_in_ms=self.wait_for_task_timeout
+            )
+            await self.client.index(index_name_tmp).delete()
+            logger.success(f"Swap index {index} complete")
+
         return count
 
     async def get_count(self, index: str):
