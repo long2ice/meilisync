@@ -16,8 +16,8 @@ aiofiles = "*"
 asyncmy = "^0.2.9"
 loguru = "*"
 meilisearch-python-sdk = "*"
-motor = { version = "*", optional = true }
-psycopg2-binary = { version = "*", optional = true }
+motor = "*"
+psycopg2-binary = "*"
 python = "^3.9"
 pyyaml = "*"
 redis = "*"
