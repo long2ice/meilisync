@@ -148,12 +148,19 @@ Enable debug mode, default is `false`, if you want to see more logs, you can set
 The plugins are used to customize the data before or after insert to Meilisearch and the plugins is a list of python
 modules.
 
-Which is a python class with `pre_event` and `post_event` methods, the `pre_event` method is called before insert to
+Which is a [python class](./meilisync/plugin.py) with `pre_event` and `post_event` methods, the `pre_event` method is called before insert to
 Meilisearch, the `post_event` method is called after insert to Meilisearch.
 
 ```python
-class Plugin:
+from loguru import logger
+from meilisync.schemas import Event
+from meilisync.plugin import Plugin
+
+class AnExamplePlugin(Plugin):
     is_global = False
+
+    def __init__(self):
+        pass # seems to break if there is no init
 
     async def pre_event(self, event: Event):
         logger.debug(f"pre_event: {event}, is_global: {self.is_global}")
@@ -166,6 +173,21 @@ class Plugin:
 
 The `is_global` is used to indicate whether the plugin instance is global, if set to `True`, the plugin instance will be
 created only once, otherwise, the plugin instance will be created for each event.
+
+Plugins must be installed as modules in python's site-packages. To avoid extending the base docker image (creating a custom Dockerfile), the easiest aproach is to mount your module to be a submodule of the meilisync package. For example, if your plugin is defined in meili_test_plugin.py, with the class named `AnExamplePlugin`, you need to:
+
+Add to your meilisync config file:
+```
+plugins:
+  - meilisync.myplugin.AnExamplePlugin
+```
+
+Add to your meilisync service in docker-compose.yml to copy the plugin to the correct location:
+```
+    volumes:
+      - meilisync-config.yml:/meilisync/config.yml
+      - meili_test_plugin.py:/meilisync/meilisync/myplugin.py
+```
 
 ### progress
 
