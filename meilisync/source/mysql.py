@@ -42,7 +42,7 @@ class MySQL(Source):
             offset = 0
             while True:
                 await cur.execute(
-                    f"SELECT {fields} FROM {sync.table} "
+                    f"SELECT {fields} FROM `{sync.table}` "
                     f"ORDER BY {sync.pk} LIMIT {size} OFFSET {offset}"
                 )
                 ret = await cur.fetchall()
@@ -54,7 +54,7 @@ class MySQL(Source):
     async def get_count(self, sync: Sync):
         conn = await asyncmy.connect(**self.kwargs)
         async with conn.cursor(cursor=DictCursor) as cur:
-            await cur.execute(f"SELECT COUNT(*) as count FROM {sync.table}")
+            await cur.execute(f"SELECT COUNT(*) as count FROM `{sync.table}`")
             ret = await cur.fetchone()
             return ret["count"]
 
