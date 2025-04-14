@@ -1,28 +1,18 @@
+from pathlib import Path
 import time
-
-import psycopg2
-
-from conftest import client
-
-index = client.index("postgres")
-
+from meilisync.main import load
 
 async def test_sync():
-    conn = psycopg2.connect(
-        host="localhost",
-        port=5432,
-        user="postgres",
-        password="123456",
-        database="test",
-    )
+    meili, source, *_ = await load(config_file=Path(__file__).parent / 'config/postgres.yml')
+    conn = source.conn
     cur = conn.cursor()
     cur.execute("DROP TABLE IF EXISTS test")
+    index_name = 'postgres'
+    await meili.client.delete_index_if_exists(index_name)
+    await meili.client.create_index(index_name)
     cur.execute("CREATE TABLE IF NOT EXISTS test (id INT PRIMARY KEY, age INT, data_json JSON)")
-    cur.execute(
-        "INSERT INTO test (id, age, data_json) VALUES (%s, %s, %s)",
-        (1, 18, '{"name": "test data"}'),
-    )
+    cur.execute("INSERT INTO test (id, age, data_json) VALUES (%s, %s, %s)",(1, 18, '{"name": "test data"}'),)
     conn.commit()
     time.sleep(2)
-    ret = await index.get_documents()
+    ret = await meili.client.index(index_name).get_documents()
     assert ret.results == [{"id": 1, "age": 18, "data_json": {"name": "test data"}}]

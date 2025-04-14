@@ -130,3 +130,6 @@ dmypy.json
 .idea
 *.json
 .DS_Store
+
+# Docker
+meili_data/

@@ -15,6 +15,36 @@ from meilisync.version import __VERSION__
 app = typer.Typer()
 
 
+async def load(config_file='config.yml'):
+    with open(config_file) as f:
+        config = f.read()
+    settings = Settings.model_validate(yaml.safe_load(config))
+    if settings.debug:
+        logger.debug(settings)
+    if settings.sentry:
+        sentry = settings.sentry
+
+        import sentry_sdk
+
+        sentry_sdk.init(
+            dsn=sentry.dsn,
+            environment=sentry.environment,
+        )
+    progress = get_progress(settings.progress.type)(
+        **settings.progress.model_dump(exclude={"type"})
+    )
+    current_progress = await progress.get()
+    source_database = get_source(settings.source.type)(
+        progress=current_progress,
+        tables=settings.tables,
+        **settings.source.model_dump(exclude={"type"}),
+    )
+    meilisearch = settings.meilisearch
+    meili = Meili(meilisearch.api_url, meilisearch.api_key, settings.plugins_cls())
+
+    return meili, source_database, current_progress, progress, settings
+ 
+
 @app.callback()
 def callback(
     context: typer.Context,
@@ -29,31 +59,7 @@ def callback(
         if context.invoked_subcommand == "version":
             return
         context.ensure_object(dict)
-        with open(config_file) as f:
-            config = f.read()
-        settings = Settings.model_validate(yaml.safe_load(config))
-        if settings.debug:
-            logger.debug(settings)
-        if settings.sentry:
-            sentry = settings.sentry
-
-            import sentry_sdk
-
-            sentry_sdk.init(
-                dsn=sentry.dsn,
-                environment=sentry.environment,
-            )
-        progress = get_progress(settings.progress.type)(
-            **settings.progress.model_dump(exclude={"type"})
-        )
-        current_progress = await progress.get()
-        source = get_source(settings.source.type)(
-            progress=current_progress,
-            tables=settings.tables,
-            **settings.source.model_dump(exclude={"type"}),
-        )
-        meilisearch = settings.meilisearch
-        meili = Meili(meilisearch.api_url, meilisearch.api_key, settings.plugins_cls())
+        meili, source, current_progress, progress, settings = await load(config_file=config_file)
         context.obj["current_progress"] = current_progress
         context.obj["source"] = source
         context.obj["meili"] = meili

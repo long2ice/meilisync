@@ -4,15 +4,14 @@ progress:
   path: mongo.json
 source:
   type: mongo
-  host: localhost
+  host: db-mongo
   port: 27017
-  username: root
-  password: root
   database: test
   replicaSet: rs0
   directConnection: true
 meilisearch:
-  api_url: http://localhost:7700
+  api_url: http://meilisearch:7700
+  api_key: # admin api key goes here
 sync:
   - table: test
     index: mongo

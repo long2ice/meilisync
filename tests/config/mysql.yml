@@ -4,13 +4,14 @@ progress:
   path: mysql.json
 source:
   type: mysql
-  host: localhost
+  host: db-mysql
   port: 3306
   user: root
   password: "123456"
   database: test
 meilisearch:
-  api_url: http://localhost:7700
+  api_url: http://meilisearch:7700
+  api_key: # admin api key goes here
 sync:
   - table: test
     index: mysql

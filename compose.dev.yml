@@ -1,0 +1,60 @@
+name: meilisync-localdev
+services:
+  meilisync:
+    platform: linux/x86_64
+    build: .
+    restart: always
+    command: ["sleep", "infinity"]
+    depends_on:
+      - meilisearch
+      - db-mongo
+      - db-postgres
+      - db-mysql
+
+  db-postgres:
+    build: tests/docker/postgres
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: test
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+  
+  db-mysql:
+    image: mysql:9
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: test
+    ports:
+      - "3306:3306"
+
+  db-mongo:
+    build: tests/docker/mongo
+    container_name: mongo_db
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: test
+    ports:
+      - "27017:27017"  
+
+  meilisearch:
+    build: tests/docker/meilisearch
+    container_name: my-meilisearch
+    environment:
+      - MEILI_MASTER_KEY=this-is-just-a-test-key-for-local-dev
+      # dev convenience to copy api keys
+      - MEILI_API_KEYS_FILE=/meili_data/api_keys.json
+    volumes:
+      - ./meili_data:/meili_data
+    ports:
+      - "7700:7700"
+
+volumes:
+  postgres_data:

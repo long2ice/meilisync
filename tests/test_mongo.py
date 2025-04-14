@@ -1,25 +1,24 @@
 import asyncio
+from pathlib import Path
 
-import motor.motor_asyncio
-
-from conftest import client
-
-index = client.index("mongo")
+from meilisync.main import load
 
 
 async def test_sync():
-    client = motor.motor_asyncio.AsyncIOMotorClient(
-        "mongodb://root:root@localhost:27017", directConnection=True
-    )
-    db = client.test
-    collection = db.test
+    meili, source, *_ = await load(config_file=Path(__file__).parent / 'config/mongo.yml')
+    index_name = 'mongo'
+    await meili.client.delete_index_if_exists(index_name)
+    await meili.client.create_index(index_name)
+
+    db = source.db
+    collection = db['test']
     await collection.delete_many({})
     data = {
         "age": 18,
     }
     inserted_id = (await collection.insert_one(data)).inserted_id
     await asyncio.sleep(2)
-    ret = await index.get_documents()
+    ret = await meili.client.index(index_name).get_documents()
     assert ret.results == [
         {
             "age": 18,

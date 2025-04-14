@@ -1,20 +1,16 @@
 import asyncio
+from pathlib import Path
 
-import asyncmy
-
-from conftest import client
-
-index = client.index("mysql")
+from meilisync.main import load
 
 
 async def test_sync():
-    conn = await asyncmy.connect(
-        host="localhost",
-        user="root",
-        password="123456",
-        port=3306,
-        database="test",
-    )
+    meili, source, *_ = await load(config_file=Path(__file__).parent / 'config/mysql.yml')
+    conn = await source.get_connection()
+    index_name = 'mysql'
+    await meili.client.delete_index_if_exists(index_name)
+    await meili.client.create_index(index_name)
+
     async with conn.cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS test")
         await cur.execute(
@@ -26,5 +22,5 @@ async def test_sync():
         )
         await conn.commit()
     await asyncio.sleep(2)
-    ret = await index.get_documents()
+    ret = await meili.client.index(index_name).get_documents()
     assert ret.results == [{"id": 1, "age": 46, "time": 223250453}]

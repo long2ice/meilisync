@@ -32,8 +32,11 @@ class MySQL(Source):
         self.server_id = int(server_id)
         self.database = kwargs.get("database")
 
+    async def get_connection(self):
+        return await asyncmy.connect(**self.kwargs)
+
     async def get_full_data(self, sync: Sync, size: int):
-        conn = await asyncmy.connect(**self.kwargs)
+        conn = await self.get_connection()
         if sync.fields:
             fields = ", ".join(f"{field} as {sync.fields[field] or field}" for field in sync.fields)
         else:

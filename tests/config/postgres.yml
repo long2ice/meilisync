@@ -4,14 +4,15 @@ progress:
   path: postgres.json
 source:
   type: postgres
-  host: localhost
+  host: db-postgres
   port: 5432
   user: postgres
-  password: postgres
+  password: "123456"
   database: test
 meilisearch:
-  api_url: http://localhost:7700
+  api_url: http://meilisearch:7700
+  api_key: # admin api key goes here
 sync:
   - table: test
     index: postgres
-    full: false
+    full: true
