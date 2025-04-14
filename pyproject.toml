@@ -26,8 +26,6 @@ typer = { version = "*", extras = ["all"] }
 pydantic-settings = "*"
 
 [tool.poetry.group.dev.dependencies]
-black = "*"
-isort = "*"
 mypy = "*"
 pytest = "*"
 pytest-asyncio = "*"
@@ -51,13 +49,6 @@ meilisync = "meilisync.main:app"
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
-
-[tool.isort]
-profile = "black"
-
-[tool.black]
-line-length = 100
-target-version = ['py38', 'py39', 'py310', 'py311']
 
 [tool.pytest.ini_options]
 asyncio_mode = 'auto'

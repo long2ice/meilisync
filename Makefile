@@ -2,12 +2,10 @@ checkfiles = meilisync/ tests/ conftest.py
 py_warn = PYTHONDEVMODE=1
 
 style:
-	@isort -src $(checkfiles)
-	@black $(checkfiles)
+	@ruff format $(checkfiles)
+	@ruff check $(checkfiles) --fix
 
 check:
-	@black --check $(checkfiles)
-	@ruff $(checkfiles) --fix
 	@mypy $(checkfiles)
 
 test:

@@ -1,4 +1,4 @@
-FROM python:3.12 as builder
+FROM python:3.13 as builder
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 RUN mkdir -p /meilisync
 WORKDIR /meilisync
@@ -8,7 +8,7 @@ RUN pip3 install poetry && poetry install --no-root -E mysql -E postgres
 COPY . /meilisync
 RUN poetry install -E all
 
-FROM python:3.12-slim
+FROM python:3.13-slim
 WORKDIR /meilisync
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
