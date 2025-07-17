@@ -4,6 +4,7 @@ from typing import List, Optional
 import typer
 import yaml
 from loguru import logger
+from envsubst import envsubst
 
 from meilisync.discover import get_progress, get_source
 from meilisync.event import EventCollection
@@ -31,6 +32,7 @@ def callback(
         context.ensure_object(dict)
         with open(config_file) as f:
             config = f.read()
+        config = envsubst(config)
         settings = Settings.model_validate(yaml.safe_load(config))
         if settings.debug:
             logger.debug(settings)
