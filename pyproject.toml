@@ -24,6 +24,7 @@ redis = "*"
 sentry-sdk = "*"
 typer = { version = "*", extras = ["all"] }
 pydantic-settings = "*"
+envsubst = "^0.1.5"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "*"
