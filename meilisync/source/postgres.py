@@ -1,7 +1,7 @@
 import asyncio
 import json
 from asyncio import Queue
-from typing import List, Any
+from typing import List
 
 import psycopg2
 import psycopg2.errors
@@ -69,75 +69,62 @@ class Postgres(Source):
             fields = ", ".join(f"{field} as {sync.fields[field] or field}" for field in sync.fields)
         else:
             fields = "*"
-        offset = 0
 
-        def _():
-            with self.conn_dict.cursor() as cur:
-                cur.execute(
-                    f"SELECT {fields} FROM {sync.table} ORDER BY "
-                    f"{sync.pk} LIMIT {size} OFFSET {offset}"
-                )
-                return cur.fetchall()
+        def execute():
+            cur.execute(f"SELECT {fields} FROM {sync.table}")
 
-        while True:
-            ret = await asyncio.get_event_loop().run_in_executor(None, _)
-            if not ret:
-                break
-            offset += size
-            yield ret
+        def fetch():
+            return cur.fetchmany(size)
+
+        # Open a server-side cursor and fetch the dataset incrementally.
+        with self.conn_dict.cursor(name="get_full_data") as cur:
+            await asyncio.get_event_loop().run_in_executor(None, execute)
+            while rows := await asyncio.get_event_loop().run_in_executor(None, fetch):
+                yield rows
 
     def _consumer(self, msg: ReplicationMessage):
         payload = json.loads(msg.payload)
-        next_lsn = payload["nextlsn"]
-
-        changes = payload.get("change", [])
+        changes = payload.get("change")
+        if not changes:
+            return
         for change in changes:
-            self.__handle_change(change, next_lsn)
+            kind = change.get("kind")
+            table = change.get("table")
+            if table not in self.tables:
+                return
+            columnnames = change.get("columnnames", [])
+            columnvalues = change.get("columnvalues", [])
+            columntypes = change.get("columntypes", [])
 
-        # Always report success to the server to avoid a “disk full” condition.
-        # https://www.psycopg.org/docs/extras.html#psycopg2.extras.ReplicationCursor.consume_stream
-        msg.cursor.send_feedback(flush_lsn=msg.data_start)
+            for i in range(len(columntypes)):
+                if columntypes[i] == "json":
+                    columnvalues[i] = json.loads(columnvalues[i])
 
-    def __handle_change(self, change: dict[str, Any], next_lsn: str):
-        table = change.get("table")
-        if table not in self.tables:
-            return
-
-        columnnames = change.get("columnnames", [])
-        columnvalues = change.get("columnvalues", [])
-        columntypes = change.get("columntypes", [])
-
-        for i in range(len(columntypes)):
-            if columntypes[i] == "json":
-                columnvalues[i] = json.loads(columnvalues[i])
-
-        kind = change.get("kind")
-        if kind == "update":
-            values = dict(zip(columnnames, columnvalues))
-            event_type = EventType.update
-        elif kind == "delete":
-            values = (
-                dict(zip(columnnames, columnvalues))
-                if columnvalues
-                else {change["oldkeys"]["keynames"][0]: change["oldkeys"]["keyvalues"][0]}
-            )
-            event_type = EventType.delete
-        elif kind == "insert":
-            values = dict(zip(columnnames, columnvalues))
-            event_type = EventType.create
-        else:
-            return
-
-        asyncio.new_event_loop().run_until_complete(
-            self.queue.put(  # type: ignore
-                Event(
-                    type=event_type,
-                    table=table,
-                    data=values,
-                    progress={"start_lsn": next_lsn},
+            if kind == "update":
+                values = dict(zip(columnnames, columnvalues))
+                event_type = EventType.update
+            elif kind == "delete":
+                values = (
+                    dict(zip(columnnames, columnvalues))
+                    if columnvalues
+                    else {change["oldkeys"]["keynames"][0]: change["oldkeys"]["keyvalues"][0]}
+                )
+                event_type = EventType.delete
+            elif kind == "insert":
+                values = dict(zip(columnnames, columnvalues))
+                event_type = EventType.create
+            else:
+                return
+            asyncio.new_event_loop().run_until_complete(
+                self.queue.put(  # type: ignore
+                    Event(
+                        type=event_type,
+                        table=table,
+                        data=values,
+                        progress={"start_lsn": payload.get("nextlsn")},
+                    )
                 )
             )
-        )
 
     async def get_count(self, sync: Sync):
         with self.conn_dict.cursor() as cur:
