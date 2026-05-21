@@ -139,6 +139,8 @@ sentry:
   environment: "production"
 ```
 
+It is possible to use environment variables inside the configuration file, using the format `${VARIABLE_NAME}`, for example `user: ${DB_USER}`.
+
 ### debug (optional)
 
 Enable debug mode, default is `false`, if you want to see more logs, you can set it to `true`.
