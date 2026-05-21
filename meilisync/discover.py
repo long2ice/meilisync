@@ -13,7 +13,11 @@ from meilisync.source import Source
 def _discover(module: ModuleType, t: Type):
     ret = {}
     for m in pkgutil.iter_modules(module.__path__):
-        mod = importlib.import_module(f"{module.__name__}.{m.name}")
+        try:
+            mod = importlib.import_module(f"{module.__name__}.{m.name}")
+        except ModuleNotFoundError:
+            # Enables optional dependencies of sources and progress.
+            continue
         for _, member in inspect.getmembers(mod, inspect.isclass):
             if issubclass(member, t) and member is not t:
                 ret[member.type] = member
