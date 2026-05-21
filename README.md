@@ -171,7 +171,7 @@ created only once, otherwise, the plugin instance will be created for each event
 
 The progress is used to record the last sync position, such as binlog position for MySQL.
 
-- `type`: `file` or `redis`, if set to file, another option `path` is required.
+- `type`: `file` or `redis`, if set to file, the `path` option can be used to specify the path.
 - `path`: the file path to store the progress, default is `progress.json`.
 - `key`: the redis key to store the progress, default is `meilisync:progress`.
 - `dsn`: the redis dsn, default is `redis://localhost:6379/0`.
@@ -206,7 +206,7 @@ The sync configuration, you can add multiple sync tasks.
 
 - `table`: the database table name or collection name.
 - `index`: the Meilisearch index name, if not set, it will use the table name.
-- `full`: whether to do a full sync, default is `false`.
+- `full`: whether to do a full sync, default is `false`. If the index already exists, the full sync won't take place.
 - `fields`: the fields to sync, if not set, it will sync all fields. The key is table field name, the value is the
   Meilisearch field name, if not set, it will use the table field name.
 - `plugins`: the table level plugins, optional.
