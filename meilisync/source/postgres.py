@@ -69,22 +69,18 @@ class Postgres(Source):
             fields = ", ".join(f"{field} as {sync.fields[field] or field}" for field in sync.fields)
         else:
             fields = "*"
-        offset = 0
 
-        def _():
-            with self.conn_dict.cursor() as cur:
-                cur.execute(
-                    f"SELECT {fields} FROM {sync.table} ORDER BY "
-                    f"{sync.pk} LIMIT {size} OFFSET {offset}"
-                )
-                return cur.fetchall()
+        def execute():
+            cur.execute(f"SELECT {fields} FROM {sync.table}")
 
-        while True:
-            ret = await asyncio.get_event_loop().run_in_executor(None, _)
-            if not ret:
-                break
-            offset += size
-            yield ret
+        def fetch():
+            return cur.fetchmany(size)
+
+        # Open a server-side cursor and fetch the dataset incrementally.
+        with self.conn_dict.cursor(name="get_full_data") as cur:
+            await asyncio.get_event_loop().run_in_executor(None, execute)
+            while rows := await asyncio.get_event_loop().run_in_executor(None, fetch):
+                yield rows
 
     def _consumer(self, msg: ReplicationMessage):
         payload = json.loads(msg.payload)
